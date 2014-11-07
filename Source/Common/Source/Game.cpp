@@ -54,11 +54,30 @@ namespace FPS
 
 	FPS_UINT32 Game::Execute( )
 	{
-		glClearColor( 1.0f, 0.0f, 0.0f, 1.0f );
-		glClear( GL_COLOR_BUFFER_BIT );
-		SDL_GL_SwapWindow( m_pWindow );
+		FPS_BOOL Run = FPS_TRUE;
+		SDL_Event Event;
 
-		SDL_Delay( 2000 );
+		while( Run )
+		{
+			while( SDL_PollEvent( &Event ) != 0 )
+			{
+				if( Event.type == SDL_QUIT )
+				{
+					Run = FPS_FALSE;
+				}
+			}
+
+			const Uint8 *pKeyState = SDL_GetKeyboardState( NULL );
+
+			if( pKeyState[ SDL_SCANCODE_ESCAPE ] )
+			{
+				Run = FPS_FALSE;
+			}
+
+			glClearColor( 1.0f, 0.0f, 0.0f, 1.0f );
+			glClear( GL_COLOR_BUFFER_BIT );
+			SDL_GL_SwapWindow( m_pWindow );
+		}
 
 		SDL_GL_DeleteContext( m_GLContext );
 		SDL_DestroyWindow( m_pWindow );
