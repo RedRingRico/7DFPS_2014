@@ -49,5 +49,38 @@ namespace FPS
 
 		return FPS_OK;
 	}
+
+	void PolygonCache::FlushLine( const FPS_MEMSIZE p_Index )
+	{
+		if( p_Index > ( m_CacheLines - 1 ) )
+		{
+			return;
+		}
+
+		// Flush the line (call OpenGL's draw function)
+	}
+
+	void PolygonCache::FlushFullest( )
+	{
+		FPS_MEMSIZE LargestCache = m_pCache[ 0 ].PolygonCount;
+
+		for( FPS_MEMSIZE Index = 1; Index < m_CacheLines; ++Index )
+		{
+			if( m_pCache[ Index ].PolygonCount > LargestCache )
+			{
+				LargestCache = m_pCache[ Index ].PolygonCount;
+			}
+		}
+
+		this->FlushLine( LargestCache );
+	}
+
+	void PolygonCache::FlushAll( )
+	{
+		for( FPS_MEMSIZE Index = 0; Index < m_CacheLines; ++Index )
+		{
+			this->FlushLine( Index );
+		}
+	}
 }
 
