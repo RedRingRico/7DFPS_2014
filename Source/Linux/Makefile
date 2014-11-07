@@ -66,7 +66,7 @@ SYSIPATH	=
 INCPATH		=
 SYSLPATH	=	
 LIBPATH		=
-SYSLIBS		=	-lX11 -lGL -lXrandr -lrt -pthread -lXi -lSDL2
+SYSLIBS		=	-lX11 -lGL -lXrandr -lrt -pthread -lXi -lSDL2 -lSDL2_ttf
 LINKFLAGS	=
 
 ##### Debug #######
@@ -191,7 +191,7 @@ endif
 .PHONY: clean completeclean
 clean:
 	@printf "Removing files from: $(TARGETDIR)... "
-	@rm -f $(TARGETDIR)/*
+	@rm -rf $(TARGETDIR)/*
 	@printf "[OK]\n"
 	@printf "Removing files from: $(OBJSDIR)... "
 	@rm -rf $(OBJSDIR)/*
