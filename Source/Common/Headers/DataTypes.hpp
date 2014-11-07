@@ -18,6 +18,8 @@ typedef uint64_t		FPS_UINT64;
 
 typedef FPS_UINT32	FPS_BOOL;
 typedef size_t		FPS_MEMSIZE;
+typedef float		FPS_FLOAT32;
+typedef double		FPS_FLOAT64;
 
 #define FPS_NULL nullptr
 

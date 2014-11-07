@@ -66,7 +66,7 @@ SYSIPATH	=
 INCPATH		=
 SYSLPATH	=	
 LIBPATH		=
-SYSLIBS		=	-lX11 -lGL -lXrandr -lrt -pthread -lXi -lSDL2 -lSDL2_ttf
+SYSLIBS		=	-lX11 -lGL -lXrandr -lrt -pthread -lXi -lSDL2 -lSDL2_ttf -lGLEW
 LINKFLAGS	=
 
 ##### Debug #######

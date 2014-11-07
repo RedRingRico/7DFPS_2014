@@ -1,5 +1,6 @@
 #include <Game.hpp>
 #include <iostream>
+#include <GL/glew.h>
 #include <GL/gl.h>
 
 namespace FPS
@@ -48,6 +49,19 @@ namespace FPS
 		}
 
 		m_GLContext = SDL_GL_CreateContext( m_pWindow );
+
+		GLenum GLEWError = glewInit( );
+
+		if( GLEWError != GLEW_OK )
+		{
+			std::cout << "[7DFPS::Game::Initialise] <ERROR> Failed to "
+				"initialise GLEW" << std::endl;
+
+			return FPS_FAIL;
+		}
+
+		std::cout << "[7DFPS::Game::Initialise] <INFO> GLEW Version: " <<
+			glewGetString( GLEW_VERSION ) << std::endl;
 
 		return FPS_OK;
 	}
