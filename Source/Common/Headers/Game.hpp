@@ -2,6 +2,7 @@
 #define __FPS_GAME_HPP__
 
 #include <DataTypes.hpp>
+#include <SDL2/SDL.h>
 
 namespace FPS
 {
@@ -17,6 +18,9 @@ namespace FPS
 
 	private:
 		FPS_UINT32 PlatformInitialise( );
+
+		SDL_Window		*m_pWindow;
+		SDL_GLContext	m_GLContext;
 	};
 }
 
