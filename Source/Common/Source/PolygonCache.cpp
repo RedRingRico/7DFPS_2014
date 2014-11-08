@@ -1,6 +1,8 @@
 #include <PolygonCache.hpp>
 #include <Memory.hpp>
 
+#define BUFFER_OFFSET( Offset ) ( ( char * )FPS_NULL + ( Offset ) )
+
 namespace FPS
 {
 	FPS_MEMSIZE GetAttributeCount( const FPS_UINT64 p_VertexAttributes );
@@ -9,7 +11,6 @@ namespace FPS
 	PolygonCache::PolygonCache( ) :
 		m_pCache( FPS_NULL ),
 		m_CacheLines( 0 ),
-		m_VertexArrayID( 0 ),
 		m_VertexAttributes( 0ULL ),
 		m_VertexAttributeCount( 0 ),
 		m_Stride( 0 )
@@ -27,18 +28,8 @@ namespace FPS
 	{
 		this->Destroy( );
 
-		m_pCache = new POLYGONCACHE[ p_CacheLines ];
-
-		for( FPS_MEMSIZE Index = 0; Index < p_CacheLines; ++Index )
-		{
-			m_pCache[ Index ].pVertices = new FPS_BYTE[ p_VertexCount ];
-			m_pCache[ Index ].pIndices = new FPS_UINT16[ p_IndexCount ];
-			m_pCache[ Index ].VertexCount = p_VertexCount;
-			m_pCache[ Index ].IndexCount = p_IndexCount;
-			m_pCache[ Index ].PolygonCount = 0;
-			m_pCache[ Index ].VertexBufferID = 0;
-			m_pCache[ Index ].IndexBufferID = 0;
-		}
+		m_VertexCapacity = p_VertexCount;
+		m_IndexCapacity = p_IndexCount;
 
 		m_CacheLines = p_CacheLines;
 
@@ -55,12 +46,83 @@ namespace FPS
 			m_Stride += AttributeToSize( Attribute );
 		}
 
-		if( m_VertexArrayID )
-		{
-			glDeleteVertexArrays( 1, &m_VertexArrayID );
-		}
+		m_pCache = new POLYGONCACHE[ p_CacheLines ];
 
-		glGenVertexArrays( 1, &m_VertexArrayID );
+		for( FPS_MEMSIZE Index = 0; Index < p_CacheLines; ++Index )
+		{
+			m_pCache[ Index ].pVertices = new FPS_BYTE[ p_VertexCount ];
+			m_pCache[ Index ].pIndices = new FPS_UINT16[ p_IndexCount ];
+			m_pCache[ Index ].VertexCount = p_VertexCount;
+			m_pCache[ Index ].IndexCount = p_IndexCount;
+			m_pCache[ Index ].IndexBufferID = 0;
+			glGenBuffers( 1, &m_pCache[ Index ].VertexBufferID );
+			glGenBuffers( 1, &m_pCache[ Index ].IndexBufferID );
+			glGenVertexArrays( 1, &m_pCache[ Index ].VertexArrayID );
+
+			glBindVertexArray( m_pCache[ Index ].VertexArrayID );
+			glBindBuffer( GL_ARRAY_BUFFER, m_pCache[ Index ].VertexBufferID );
+			glBindBuffer( GL_ELEMENT_ARRAY_BUFFER,
+				m_pCache[ Index ].IndexBufferID );
+
+			FPS_MEMSIZE AccumulatedDimension = 0;
+
+			for( FPS_MEMSIZE VertexAttributeIndex = 0;
+				VertexAttributeIndex < m_VertexAttributeCount;
+				++VertexAttributeIndex )
+			{
+				FPS_MEMSIZE Dimension = 0;
+				FPS_MEMSIZE TypeSize = 0;
+				GLenum Type = GL_INVALID_ENUM;
+				FPS_BYTE VertexAttribute = 0x0F & ( m_VertexAttributes >> (
+					VertexAttributeIndex * 4 ) );
+
+				Dimension = 0x03 & ( ( VertexAttribute ) + 1 );
+
+				switch( ( 0x0C & ( VertexAttribute ) ) >> 2 )
+				{
+					case 0:
+					{
+						Type = GL_INT;
+						TypeSize = sizeof( FPS_SINT32 );
+						break;
+					}
+					case 1:
+					{
+						Type = GL_FLOAT;
+						TypeSize = sizeof( FPS_FLOAT32 );
+						break;
+					}
+					case 2:
+					{
+						Type = GL_DOUBLE;
+						TypeSize = sizeof( FPS_FLOAT64 );
+						break;
+					}
+					case 3:
+					{
+						Type = GL_FLOAT;
+						TypeSize = sizeof( FPS_FLOAT32 );
+						Dimension *= Dimension;
+						break;
+					}
+				}
+
+				glVertexAttribPointer( VertexAttributeIndex, Dimension, Type,
+					GL_FALSE, m_Stride,
+					BUFFER_OFFSET( TypeSize * AccumulatedDimension ) );
+
+				AccumulatedDimension += Dimension;
+				glEnableVertexAttribArray( VertexAttributeIndex );
+			}
+
+			glBufferData( GL_ARRAY_BUFFER, m_VertexCapacity * m_Stride,
+				FPS_NULL, GL_STREAM_DRAW );
+			glBufferData( GL_ELEMENT_ARRAY_BUFFER,
+				m_IndexCapacity * sizeof( FPS_UINT16 ), FPS_NULL,
+				GL_STREAM_DRAW );
+
+			glBindVertexArray( 0 );
+		}
 
 		return FPS_OK;
 	}
@@ -76,11 +138,6 @@ namespace FPS
 			}
 
 			SafeDeleteArray< POLYGONCACHE >( m_pCache );
-		}
-
-		if( m_VertexArrayID )
-		{
-			glDeleteVertexArrays( 1, &m_VertexArrayID );
 		}
 
 		return FPS_OK;

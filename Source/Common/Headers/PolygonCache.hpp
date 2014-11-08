@@ -16,6 +16,7 @@ namespace FPS
 		FPS_MEMSIZE	PolygonCount;
 		GLuint		VertexBufferID;
 		GLuint		IndexBufferID;
+		GLuint		VertexArrayID;
 	}POLYGONCACHE,*PPOLYGONCACHE;
 
 	class PolygonCache
@@ -37,11 +38,11 @@ namespace FPS
 	private:
 		POLYGONCACHE	*m_pCache;
 		FPS_MEMSIZE		m_CacheLines;
-		// The Vertex Array Object is used for all cache lines
-		GLuint			m_VertexArrayID;
 		FPS_UINT64		m_VertexAttributes;
 		FPS_MEMSIZE		m_VertexAttributeCount;
 		FPS_MEMSIZE		m_Stride;
+		FPS_MEMSIZE		m_VertexCapacity;
+		FPS_MEMSIZE		m_IndexCapacity;
 	};
 }
 
