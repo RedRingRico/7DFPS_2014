@@ -63,6 +63,13 @@ namespace FPS
 		std::cout << "[7DFPS::Game::Initialise] <INFO> GLEW Version: " <<
 			glewGetString( GLEW_VERSION ) << std::endl;
 
+		if( m_Renderer.Initialise( m_pWindow ) != FPS_OK )
+		{
+			return FPS_FAIL;
+		}
+
+		m_Renderer.SetClearColour( 0.0f, 1.0f, 0.0f );
+
 		return FPS_OK;
 	}
 
@@ -88,9 +95,8 @@ namespace FPS
 				Run = FPS_FALSE;
 			}
 
-			glClearColor( 1.0f, 0.0f, 0.0f, 1.0f );
-			glClear( GL_COLOR_BUFFER_BIT );
-			SDL_GL_SwapWindow( m_pWindow );
+			m_Renderer.Clear( FPS_TRUE, FPS_TRUE, FPS_TRUE );
+			m_Renderer.SwapBuffers( );
 		}
 
 		SDL_GL_DeleteContext( m_GLContext );

@@ -149,6 +149,44 @@ namespace FPS
 		const FPS_UINT16 *p_pIndices, const FPS_UINT32 p_MaterialID,
 		GLenum p_PrimitiveType )
 	{
+		FPS_MEMSIZE PolygonCount = 0;
+
+		switch( p_PrimitiveType )
+		{
+			case GL_TRIANGLES:
+			{
+				PolygonCount = p_IndexCount / 3;
+				break;
+			}
+			case GL_TRIANGLE_STRIP:
+			case GL_TRIANGLE_FAN:
+			{
+				PolygonCount = p_IndexCount - 2;
+				break;
+			}
+			case GL_LINES:
+			{
+				PolygonCount = p_IndexCount / 2;
+				break;
+			}
+			case GL_LINE_STRIP:
+			{
+				PolygonCount = p_IndexCount - 1;
+				break;
+			}
+			case GL_LINE_LOOP:
+			{
+				PolygonCount = p_IndexCount;
+				break;
+			}
+		}
+
+		if( PolygonCount == 0 )
+		{
+			// Can't do anything with no polygons!
+			return FPS_FAIL;
+		}
+
 		FPS_MEMSIZE CacheLine = 0;
 		FPS_BOOL MaterialMatch = FPS_FALSE;
 		// Find a cache with the same material ID, if there isn't one, flush
@@ -220,36 +258,8 @@ namespace FPS
 
 		m_pCache[ CacheLine ].VertexCount += p_VertexCount;
 		m_pCache[ CacheLine ].IndexCount += p_IndexCount;
-		FPS_MEMSIZE PolygonCount = 0;
-		switch( p_PrimitiveType )
-		{
-			case GL_TRIANGLES:
-			{
-				PolygonCount = p_IndexCount / 3;
-				break;
-			}
-			case GL_TRIANGLE_STRIP:
-			case GL_TRIANGLE_FAN:
-			{
-				PolygonCount = p_IndexCount - 2;
-				break;
-			}
-			case GL_LINES:
-			{
-				PolygonCount = p_IndexCount / 2;
-				break;
-			}
-			case GL_LINE_STRIP:
-			{
-				PolygonCount = p_IndexCount - 1;
-				break;
-			}
-			case GL_LINE_LOOP:
-			{
-				PolygonCount = p_IndexCount;
-				break;
-			}
-		}
+
+
 		m_pCache[ CacheLine ].PolygonCount += PolygonCount;
 		m_pCache[ CacheLine ].PrimitiveType = p_PrimitiveType;
 

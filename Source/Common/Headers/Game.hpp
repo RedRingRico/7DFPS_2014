@@ -3,6 +3,7 @@
 
 #include <DataTypes.hpp>
 #include <SDL2/SDL.h>
+#include <Renderer.hpp>
 
 namespace FPS
 {
@@ -18,6 +19,8 @@ namespace FPS
 
 	private:
 		FPS_UINT32 PlatformInitialise( );
+
+		Renderer	m_Renderer;
 
 		SDL_Window		*m_pWindow;
 		SDL_GLContext	m_GLContext;
