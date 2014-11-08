@@ -14,6 +14,8 @@ namespace FPS
 		FPS_MEMSIZE	VertexCount;
 		FPS_MEMSIZE	IndexCount;
 		FPS_MEMSIZE	PolygonCount;
+		GLuint		VertexBufferID;
+		GLuint		IndexBufferID;
 	}POLYGONCACHE,*PPOLYGONCACHE;
 
 	class PolygonCache

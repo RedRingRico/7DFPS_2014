@@ -35,6 +35,9 @@ namespace FPS
 			m_pCache[ Index ].pIndices = new FPS_UINT16[ p_IndexCount ];
 			m_pCache[ Index ].VertexCount = p_VertexCount;
 			m_pCache[ Index ].IndexCount = p_IndexCount;
+			m_pCache[ Index ].PolygonCount = 0;
+			m_pCache[ Index ].VertexBufferID = 0;
+			m_pCache[ Index ].IndexBufferID = 0;
 		}
 
 		m_CacheLines = p_CacheLines;
