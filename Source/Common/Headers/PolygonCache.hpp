@@ -18,6 +18,7 @@ namespace FPS
 		GLuint		VertexBufferID;
 		GLuint		IndexBufferID;
 		GLuint		VertexArrayID;
+		GLenum		PrimitiveType;
 	}POLYGONCACHE,*PPOLYGONCACHE;
 
 	class PolygonCache
@@ -32,9 +33,14 @@ namespace FPS
 
 		FPS_UINT32 Destroy( );
 
+		FPS_UINT32 AddPolygons( const FPS_MEMSIZE p_VertexCount,
+			const FPS_MEMSIZE p_IndexCount, const FPS_BYTE *p_pVertices,
+			const FPS_UINT16 *p_pIndices, const FPS_UINT32 p_MaterialID,
+			GLenum p_PrimitiveType );
+
 		void FlushLine( const FPS_MEMSIZE p_Index );
-		void FlushFullest( );
-		void FlushAll( );
+		FPS_MEMSIZE FlushFullestLine( );
+		void FlushAllLines( );
 
 	private:
 		POLYGONCACHE	*m_pCache;

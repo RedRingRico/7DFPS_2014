@@ -144,6 +144,120 @@ namespace FPS
 		return FPS_OK;
 	}
 
+	FPS_UINT32 PolygonCache::AddPolygons( const FPS_MEMSIZE p_VertexCount,
+		const FPS_MEMSIZE p_IndexCount, const FPS_BYTE *p_pVertices,
+		const FPS_UINT16 *p_pIndices, const FPS_UINT32 p_MaterialID,
+		GLenum p_PrimitiveType )
+	{
+		FPS_MEMSIZE CacheLine = 0;
+		FPS_BOOL MaterialMatch = FPS_FALSE;
+		// Find a cache with the same material ID, if there isn't one, flush
+		// the fullest line and add it
+		for( FPS_MEMSIZE Index = 0; Index < m_CacheLines; ++Index )
+		{
+			if( ( m_pCache[ Index ].MaterialID == p_MaterialID ) &&
+				( m_pCache[ Index ].PrimitiveType == p_PrimitiveType ) )
+			{
+				CacheLine = Index;
+				MaterialMatch = FPS_TRUE;
+				break;
+			}
+
+			if( m_pCache[ Index ].MaterialID == 0 )
+			{
+				CacheLine = Index;
+				MaterialMatch = FPS_TRUE;
+				break;
+			}
+		}
+
+		if( MaterialMatch == FPS_FALSE )
+		{
+			CacheLine = this->FlushFullestLine( );
+		}
+
+		if( p_VertexCount > m_VertexCapacity )
+		{
+			return FPS_FAIL;
+		}
+
+		if( p_IndexCount > m_IndexCapacity )
+		{
+			return FPS_FAIL;
+		}
+
+		if( ( p_VertexCount + m_pCache[ CacheLine ].VertexCount ) >
+			m_VertexCapacity )
+		{
+			this->FlushLine( CacheLine );
+		}
+
+		if( ( p_IndexCount + m_pCache[ CacheLine ].IndexCount ) >
+			m_IndexCapacity )
+		{
+			this->FlushLine( CacheLine );
+		}
+
+		glBindVertexArray( m_pCache[ CacheLine ].VertexArrayID );
+
+		glBufferSubData( GL_ARRAY_BUFFER,
+			m_pCache[ CacheLine ].VertexCount * m_Stride,
+			p_VertexCount * m_Stride, p_pVertices );
+
+		// Offset the indices to start at the VertexCount
+		FPS_UINT16 *pIndices = new FPS_UINT16[ p_IndexCount ];
+		for( FPS_MEMSIZE Index = 0; Index < p_IndexCount; ++Index )
+		{
+			pIndices[ Index ] = p_pIndices[ Index ] +
+				m_pCache[ CacheLine ].VertexCount;
+		}
+
+		glBufferSubData( GL_ELEMENT_ARRAY_BUFFER,
+			m_pCache[ CacheLine ].IndexCount * sizeof( FPS_UINT16 ),
+			p_IndexCount * sizeof( FPS_UINT16 ), pIndices );
+
+		SafeDeleteArray< FPS_UINT16 >( pIndices );
+
+		m_pCache[ CacheLine ].VertexCount += p_VertexCount;
+		m_pCache[ CacheLine ].IndexCount += p_IndexCount;
+		FPS_MEMSIZE PolygonCount = 0;
+		switch( p_PrimitiveType )
+		{
+			case GL_TRIANGLES:
+			{
+				PolygonCount = p_IndexCount / 3;
+				break;
+			}
+			case GL_TRIANGLE_STRIP:
+			case GL_TRIANGLE_FAN:
+			{
+				PolygonCount = p_IndexCount - 2;
+				break;
+			}
+			case GL_LINES:
+			{
+				PolygonCount = p_IndexCount / 2;
+				break;
+			}
+			case GL_LINE_STRIP:
+			{
+				PolygonCount = p_IndexCount - 1;
+				break;
+			}
+			case GL_LINE_LOOP:
+			{
+				PolygonCount = p_IndexCount;
+				break;
+			}
+		}
+		m_pCache[ CacheLine ].PolygonCount += PolygonCount;
+		m_pCache[ CacheLine ].PrimitiveType = p_PrimitiveType;
+
+		glBindVertexArray( 0 );
+
+		return FPS_OK;
+	}
+
 	void PolygonCache::FlushLine( const FPS_MEMSIZE p_Index )
 	{
 		if( p_Index > ( m_CacheLines - 1 ) )
@@ -153,13 +267,19 @@ namespace FPS
 
 		glBindVertexArray( m_pCache[ p_Index ].VertexArrayID );
 
-		glDrawElements( GL_TRIANGLES, m_pCache[ p_Index ].IndexCount,
-			GL_UNSIGNED_SHORT, ( GLubyte * )FPS_NULL + 0 );
+		glDrawElements( m_pCache[ p_Index ].PrimitiveType,
+			m_pCache[ p_Index ].IndexCount, GL_UNSIGNED_SHORT,
+			( GLubyte * )FPS_NULL + 0 );
 
 		glBindVertexArray( 0 );
+
+		m_pCache[ p_Index ].VertexCount = 0;
+		m_pCache[ p_Index ].IndexCount = 0;
+		m_pCache[ p_Index ].PolygonCount = 0;
+		m_pCache[ p_Index ].MaterialID = 0;
 	}
 
-	void PolygonCache::FlushFullest( )
+	FPS_MEMSIZE PolygonCache::FlushFullestLine( )
 	{
 		FPS_MEMSIZE LargestCache = m_pCache[ 0 ].PolygonCount;
 
@@ -172,9 +292,11 @@ namespace FPS
 		}
 
 		this->FlushLine( LargestCache );
+
+		return LargestCache;
 	}
 
-	void PolygonCache::FlushAll( )
+	void PolygonCache::FlushAllLines( )
 	{
 		for( FPS_MEMSIZE Index = 0; Index < m_CacheLines; ++Index )
 		{
