@@ -14,6 +14,7 @@ namespace FPS
 		FPS_MEMSIZE	VertexCount;
 		FPS_MEMSIZE	IndexCount;
 		FPS_MEMSIZE	PolygonCount;
+		FPS_UINT32	MaterialID;
 		GLuint		VertexBufferID;
 		GLuint		IndexBufferID;
 		GLuint		VertexArrayID;
@@ -28,7 +29,7 @@ namespace FPS
 		FPS_UINT32 Create( const FPS_MEMSIZE p_VertexCount,
 			const FPS_MEMSIZE p_IndexCount, const FPS_MEMSIZE p_CacheLines,
 			const FPS_UINT64 p_VertexAttributes );
-		
+
 		FPS_UINT32 Destroy( );
 
 		void FlushLine( const FPS_MEMSIZE p_Index );

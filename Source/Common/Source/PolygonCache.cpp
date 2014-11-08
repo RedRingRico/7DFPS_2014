@@ -54,7 +54,8 @@ namespace FPS
 			m_pCache[ Index ].pIndices = new FPS_UINT16[ p_IndexCount ];
 			m_pCache[ Index ].VertexCount = p_VertexCount;
 			m_pCache[ Index ].IndexCount = p_IndexCount;
-			m_pCache[ Index ].IndexBufferID = 0;
+			m_pCache[ Index ].PolygonCount = 0;
+			m_pCache[ Index ].MaterialID = 0;
 			glGenBuffers( 1, &m_pCache[ Index ].VertexBufferID );
 			glGenBuffers( 1, &m_pCache[ Index ].IndexBufferID );
 			glGenVertexArrays( 1, &m_pCache[ Index ].VertexArrayID );
@@ -150,7 +151,12 @@ namespace FPS
 			return;
 		}
 
-		// Flush the line (call OpenGL's draw function)
+		glBindVertexArray( m_pCache[ p_Index ].VertexArrayID );
+
+		glDrawElements( GL_TRIANGLES, m_pCache[ p_Index ].IndexCount,
+			GL_UNSIGNED_SHORT, ( GLubyte * )FPS_NULL + 0 );
+
+		glBindVertexArray( 0 );
 	}
 
 	void PolygonCache::FlushFullest( )
