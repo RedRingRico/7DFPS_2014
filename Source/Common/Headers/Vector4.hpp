@@ -15,6 +15,15 @@ namespace FPS
 
 		void Set( const FPS_FLOAT32 p_X, const FPS_FLOAT32 p_Y,
 			const FPS_FLOAT32 p_Z, const FPS_FLOAT32 p_W );
+		void SetX( const FPS_FLOAT32 p_X );
+		void SetY( const FPS_FLOAT32 p_Y );
+		void SetZ( const FPS_FLOAT32 p_Z );
+		void SetW( const FPS_FLOAT32 p_W );
+
+		FPS_FLOAT32 GetX( ) const;
+		FPS_FLOAT32 GetY( ) const;
+		FPS_FLOAT32 GetZ( ) const;
+		FPS_FLOAT32 GetW( ) const;
 
 		FPS_FLOAT32 GetMagnitude( ) const;
 		FPS_FLOAT32 GetMagnitudeSq( ) const;

@@ -34,6 +34,46 @@ namespace FPS
 		m_W = p_W;
 	}
 
+	void Vector4::SetX( const FPS_FLOAT32 p_X )
+	{
+		m_X = p_X;
+	}
+
+	void Vector4::SetY( const FPS_FLOAT32 p_Y )
+	{
+		m_Y = p_Y;
+	}
+
+	void Vector4::SetZ( const FPS_FLOAT32 p_Z )
+	{
+		m_Z = p_Z;
+	}
+
+	void Vector4::SetW( const FPS_FLOAT32 p_W )
+	{
+		m_W = p_W;
+	}
+
+	FPS_FLOAT32 Vector4::GetX( ) const
+	{
+		return m_X;
+	}
+
+	FPS_FLOAT32 Vector4::GetY( ) const
+	{
+		return m_Y;
+	}
+
+	FPS_FLOAT32 Vector4::GetZ( ) const
+	{
+		return m_Z;
+	}
+
+	FPS_FLOAT32 Vector4::GetW( ) const
+	{
+		return m_W;
+	}
+
 	FPS_FLOAT32 Vector4::GetMagnitude( ) const
 	{
 		return ( sqrtf( ( m_X * m_X ) + ( m_Y * m_Y ) + ( m_Z * m_Z ) +
