@@ -1,6 +1,7 @@
 #include <Matrix4x4.hpp>
 #include <Vector4.hpp>
 #include <Maths.hpp>
+#include <cmath>
 
 namespace FPS
 {
@@ -187,6 +188,164 @@ namespace FPS
 		m_M[ 10 ] = p_Scale;
 
 		return *this;
+	}
+
+	void Matrix4x4::SetRows( const Vector4 &p_Row1, const Vector4 &p_Row2,
+		const Vector4 &p_Row3, const Vector4 &p_Row4 )
+	{
+		m_M[ 0 ] = p_Row1.GetX( );
+		m_M[ 4 ] = p_Row1.GetY( );
+		m_M[ 8 ] = p_Row1.GetZ( );
+		m_M[ 12 ] = p_Row1.GetW( );
+
+		m_M[ 1 ] = p_Row2.GetX( );
+		m_M[ 5 ] = p_Row2.GetY( );
+		m_M[ 9 ] = p_Row2.GetZ( );
+		m_M[ 13 ] = p_Row2.GetW( );
+
+		m_M[ 2 ] = p_Row3.GetX( );
+		m_M[ 6 ] = p_Row3.GetY( );
+		m_M[ 10 ] = p_Row3.GetZ( );
+		m_M[ 14 ] = p_Row3.GetW( );
+
+		m_M[ 3 ] = p_Row4.GetX( );
+		m_M[ 7 ] = p_Row4.GetY( );
+		m_M[ 11 ] = p_Row4.GetZ( );
+		m_M[ 15 ] = p_Row4.GetW( );
+	}
+
+	void Matrix4x4::SetColumns( const Vector4 &p_Column1,
+		const Vector4 &p_Column2, const Vector4 &p_Column3,
+		const Vector4 &p_Column4 )
+	{
+		m_M[ 0 ] = p_Column1.GetX( );
+		m_M[ 1 ] = p_Column1.GetY( );
+		m_M[ 2 ] = p_Column1.GetZ( );
+		m_M[ 3 ] = p_Column1.GetW( );
+
+		m_M[ 4 ] = p_Column2.GetX( );
+		m_M[ 5 ] = p_Column2.GetY( );
+		m_M[ 6 ] = p_Column2.GetZ( );
+		m_M[ 7 ] = p_Column2.GetW( );
+
+		m_M[ 8 ] = p_Column3.GetX( );
+		m_M[ 9 ] = p_Column3.GetY( );
+		m_M[ 10 ] = p_Column3.GetZ( );
+		m_M[ 11 ] = p_Column3.GetW( );
+
+		m_M[ 12 ] = p_Column4.GetX( );
+		m_M[ 13 ] = p_Column4.GetY( );
+		m_M[ 14 ] = p_Column4.GetZ( );
+		m_M[ 15 ] = p_Column4.GetW( );
+	}
+
+	Matrix4x4 &Matrix4x4::CreatePerspectiveFOV( const FPS_FLOAT32 p_FOV,
+		const FPS_FLOAT32 p_AspectRatio, const FPS_FLOAT32 p_NearPlane,
+		const FPS_FLOAT32 p_FarPlane )
+	{
+		if( FPS::Absolute( p_FarPlane - p_NearPlane ) < FPS_EPSILON )
+		{
+			return *this;
+		}
+
+		this->Identity( );
+
+		FPS_FLOAT32 D = 1.0f / tanf( p_FOV / 180.0f ) * FPS_PI * 0.5f;
+		FPS_FLOAT32 Recip = 1.0f / ( p_NearPlane - p_FarPlane );
+
+		m_M[ 0 ] = D / p_AspectRatio;
+		m_M[ 5 ] = D;
+		m_M[ 10 ] = ( p_NearPlane + p_FarPlane ) * Recip;
+		m_M[ 11 ] = -1.0f;
+		m_M[ 14 ] = 2 * p_NearPlane * p_FarPlane * Recip;
+		m_M[ 15 ] = 0.0f;
+
+		return *this;
+	}
+
+	Matrix4x4 &Matrix4x4::CreateViewLookAt( const Vector4 &p_Position,
+		const Vector4 &p_Point, const Vector4 &p_WorldUp )
+	{
+		Vector4 Right, Up, Direction;
+
+		Direction = p_Point - p_Position;
+		Direction.Normalise( );
+
+		Right = Direction.CrossProduct( p_WorldUp );
+		Right.Normalise( );
+
+		Up = Right.CrossProduct( Direction );
+		Up.Normalise( );
+
+		Matrix4x4 Upper3x3;
+
+		Vector4 Zero( 0.0f, 0.0f, 0.0f, 1.0f );
+		Upper3x3.SetColumns( Right, Up, -Direction, Zero );
+
+		Vector4 Position = -( Upper3x3 * p_Position );
+
+		this->CreateView3D( Right, Up, -Direction, Position );
+
+		return *this;
+	}
+
+	Matrix4x4 &Matrix4x4::CreateView3D( const Vector4 &p_Right,
+		const Vector4 &p_Up, const Vector4 &p_Direction,
+		const Vector4 &p_Position )
+	{
+		// R U D P
+		// R U D P
+		// R U D P
+		// 0 0 0 1
+
+		m_M[ 0 ] = p_Right.GetX( );
+		m_M[ 1 ] = p_Right.GetY( );
+		m_M[ 2 ] = p_Right.GetZ( );
+		m_M[ 3 ] = 0.0f;
+
+		m_M[ 4 ] = p_Up.GetX( );
+		m_M[ 5 ] = p_Up.GetY( );
+		m_M[ 6 ] = p_Up.GetZ( );
+		m_M[ 7 ] = 0.0f;
+
+		m_M[ 8 ] = p_Direction.GetX( );
+		m_M[ 9 ] = p_Direction.GetY( );
+		m_M[ 10 ] = p_Direction.GetZ( );
+		m_M[ 11 ] = 0.0f;
+
+		m_M[ 12 ] = p_Position.GetX( );
+		m_M[ 13 ] = p_Position.GetY( );
+		m_M[ 14 ] = p_Position.GetZ( );
+		m_M[ 15 ] = 1.0f;
+
+		return *this;
+	}
+
+	Vector4 Matrix4x4::operator*( const Vector4 &p_Vector ) const
+	{
+		Vector4 Multiply;
+
+		Multiply.SetX(	( m_M[ 0 ] * p_Vector.GetX( ) ) +
+						( m_M[ 4 ] * p_Vector.GetY( ) ) +
+						( m_M[ 8 ] * p_Vector.GetZ( ) ) +
+						( m_M[ 12 ] * p_Vector.GetW( ) ) );
+
+		Multiply.SetY(	( m_M[ 1 ] * p_Vector.GetX( ) ) +
+						( m_M[ 5 ] * p_Vector.GetY( ) ) +
+						( m_M[ 9 ] * p_Vector.GetZ( ) ) +
+						( m_M[ 13 ] * p_Vector.GetW( ) ) );
+		
+		Multiply.SetZ(	( m_M[ 2 ] * p_Vector.GetX( ) ) +
+						( m_M[ 6 ] * p_Vector.GetY( ) ) +
+						( m_M[ 10 ] * p_Vector.GetZ( ) ) +
+						( m_M[ 14 ] * p_Vector.GetW( ) ) );
+
+		Multiply.SetW(	( m_M[ 3 ] * p_Vector.GetX( ) ) +
+						( m_M[ 7 ] * p_Vector.GetY( ) ) +
+						( m_M[ 11 ] * p_Vector.GetZ( ) ) +
+						( m_M[ 15 ] * p_Vector.GetW( ) ) );
+
+		return Multiply;
 	}
 
 	FPS_FLOAT32 &Matrix4x4::operator[ ]( const FPS_MEMSIZE p_Index )

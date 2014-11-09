@@ -23,6 +23,11 @@ namespace FPS
 		return ( 1.0f / FPS::SquareRoot( p_Value ) );
 	}
 
+	FPS_FLOAT32 Absolute( const FPS_FLOAT32 p_Value )
+	{
+		return fabs( p_Value );
+	}
+
 	void SineCosine( const FPS_FLOAT32 p_Angle, FPS_FLOAT32 &p_Sine,
 		FPS_FLOAT32 &p_Cosine )
 	{

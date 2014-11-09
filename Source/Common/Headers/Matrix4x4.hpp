@@ -50,6 +50,15 @@ namespace FPS
 
 		FPS_FLOAT32 Trace( ) const;
 
+		Matrix4x4 &CreatePerspectiveFOV( const FPS_FLOAT32 p_FOV,
+			const FPS_FLOAT32 p_AspectRatio, const FPS_FLOAT32 p_NearPlane,
+			const FPS_FLOAT32 p_FarPlane );
+		Matrix4x4 &CreateViewLookAt( const Vector4 &p_Position,
+			const Vector4 &p_Point, const Vector4 &p_WorldUp );
+		Matrix4x4 &CreateView3D( const Vector4 &p_Right,
+			const Vector4 &p_Up, const Vector4 &p_Direction,
+			const Vector4 &p_Position );
+
 		FPS_BOOL operator==( const Matrix4x4 &p_Right ) const;
 		FPS_BOOL operator!=( const Matrix4x4 &p_Right ) const;
 
