@@ -52,7 +52,7 @@ namespace FPS
 		Shader( );
 		~Shader( );
 
-		FPS_UINT32 LoadShaderFromSource( const std::string &p_Source,
+		FPS_UINT32 CreateShaderFromSource( const std::string &p_Source,
 			const SHADER_TYPE p_ShaderType, const FPS_BOOL p_FromFile );
 
 		FPS_UINT32 Apply( );
@@ -61,13 +61,15 @@ namespace FPS
 			const SHADER_PARAMETER_TYPE, void *p_pValue );
 
 	private:
-		FPS_UINT32	m_ID;
-		GLuint		m_VertexID;
-		GLuint		m_FragmentID;
-		GLuint		m_GeometryID;
-		GLuint		m_ProgramID;
-		FPS_BOOL	m_Linked;
-		std::map< std::string, GLuint > UniformLocationMap;
+		FPS_UINT32 ExtractUniformNames( const GLchar *p_Source );
+
+		FPS_UINT32						m_ID;
+		GLuint							m_VertexID;
+		GLuint							m_FragmentID;
+		GLuint							m_GeometryID;
+		GLuint							m_ProgramID;
+		FPS_BOOL						m_Linked;
+		std::map< std::string, GLuint > m_UniformLocationMap;
 	};
 }
 
