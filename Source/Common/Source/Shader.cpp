@@ -213,7 +213,108 @@ namespace FPS
 			SHADER_PARAMETER ShaderParameter =
 				{ SHADER_PARAMETER_TYPE_UNKNOWN, 1, 0 };
 
-			// Compare all the types here...
+			if( Type.compare( "float" ) == 0 )
+			{
+				ShaderParameter.Type = SHADER_PARAMETER_TYPE_FLOAT1;
+			}
+			else if( Type.compare( "vec2" ) == 0 )
+			{
+				ShaderParameter.Type = SHADER_PARAMETER_TYPE_FLOAT2;
+			}
+			else if( Type.compare( "vec3" ) == 0 )
+			{
+				ShaderParameter.Type = SHADER_PARAMETER_TYPE_FLOAT3;
+			}
+			else if( Type.compare( "vec4" ) == 0 )
+			{
+				ShaderParameter.Type = SHADER_PARAMETER_TYPE_FLOAT4;
+			}
+			else if( Type.compare( "bool" ) == 0 )
+			{
+				ShaderParameter.Type = SHADER_PARAMETER_TYPE_BOOL1;
+			}
+			else if( Type.compare( "bvec2" ) == 0 )
+			{
+				ShaderParameter.Type = SHADER_PARAMETER_TYPE_BOOL2;
+			}
+			else if( Type.compare( "bvec3" ) == 0 )
+			{
+				ShaderParameter.Type = SHADER_PARAMETER_TYPE_BOOL3;
+			}
+			else if( Type.compare( "bvec4" ) == 0 )
+			{
+				ShaderParameter.Type = SHADER_PARAMETER_TYPE_BOOL4;
+			}
+			else if( Type.compare( "int" ) == 0 )
+			{
+				ShaderParameter.Type = SHADER_PARAMETER_TYPE_INT1;
+			}
+			else if( Type.compare( "ivec2" ) == 0 )
+			{
+				ShaderParameter.Type = SHADER_PARAMETER_TYPE_INT2;
+			}
+			else if( Type.compare( "ivec3" ) == 0 )
+			{
+				ShaderParameter.Type = SHADER_PARAMETER_TYPE_INT3;
+			}
+			else if( Type.compare( "ivec4" ) == 0 )
+			{
+				ShaderParameter.Type = SHADER_PARAMETER_TYPE_INT4;
+			}
+			else if( Type.compare( "uint" ) == 0 )
+			{
+				ShaderParameter.Type = SHADER_PARAMETER_TYPE_UINT1;
+			}
+			else if( Type.compare( "uvec2" ) == 0 )
+			{
+				ShaderParameter.Type = SHADER_PARAMETER_TYPE_UINT2;
+			}
+			else if( Type.compare( "uvec3" ) == 0 )
+			{
+				ShaderParameter.Type = SHADER_PARAMETER_TYPE_UINT3;
+			}
+			else if( Type.compare( "uvec4" ) == 0 )
+			{
+				ShaderParameter.Type = SHADER_PARAMETER_TYPE_UINT4;
+			}
+			else if( Type.compare( "double" ) == 0 )
+			{
+				ShaderParameter.Type = SHADER_PARAMETER_TYPE_DOUBLE1;
+			}
+			else if( Type.compare( "dvec2" ) == 0 )
+			{
+				ShaderParameter.Type = SHADER_PARAMETER_TYPE_DOUBLE2;
+			}
+			else if( Type.compare( "dvec3" ) == 0 )
+			{
+				ShaderParameter.Type = SHADER_PARAMETER_TYPE_DOUBLE3;
+			}
+			else if( Type.compare( "dvec4" ) == 0 )
+			{
+				ShaderParameter.Type = SHADER_PARAMETER_TYPE_DOUBLE4;
+			}
+			else if(	( Type.compare( "mat2" ) == 0 ) ||
+						( Type.compare( "mat2x2" ) == 0 ) )
+			{
+				ShaderParameter.Type = SHADER_PARAMETER_TYPE_MATRIX2X2;
+			}
+			else if(	( Type.compare( "mat3" ) == 0 ) ||
+						( Type.compare( "mat3x3" ) == 0 ) )
+			{
+				ShaderParameter.Type = SHADER_PARAMETER_TYPE_MATRIX3X3;
+			}
+			else if(	( Type.compare( "mat4" ) == 0 ) ||
+						( Type.compare( "mat4x4" ) == 0 ) )
+			{
+				ShaderParameter.Type = SHADER_PARAMETER_TYPE_MATRIX4X4;
+			}
+			else
+			{
+				std::cout << "[FPS::Shader::ExtractUniformNames] <ERROR> "
+					"Unknown parameter type: '" << Type << "'" << std::endl;
+
+				return FPS_FAIL;
+			}
 
 			// Step 2: Find the name
 			FPS_MEMSIZE UniformNameStart = SourceCopy.find_first_not_of( " \t",
