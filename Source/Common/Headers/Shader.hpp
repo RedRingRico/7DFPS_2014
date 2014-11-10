@@ -43,8 +43,15 @@ namespace FPS
 		SHADER_PARAMETER_TYPE_INT3		= 42,
 		SHADER_PARAMETER_TYPE_INT4		= 43,
 
-		SHADER_PARAMETER_TYPE_UNKONWN	= 0x7FFFFFFF
+		SHADER_PARAMETER_TYPE_UNKNOWN	= 0x7FFFFFFF
 	}SHADER_PARAMETER_TYPE;
+
+	typedef struct _tagSHADER_PARAMETER
+	{
+		SHADER_PARAMETER_TYPE	Type;
+		GLint					Location;
+		GLint					ArraySize;
+	}SHADER_PARAMETER,*PSHADER_PARAMETER;
 
 	class Shader
 	{
@@ -58,18 +65,20 @@ namespace FPS
 		FPS_UINT32 Apply( );
 
 		FPS_UINT32 SetShaderParameter( const std::string &p_Name,
-			const SHADER_PARAMETER_TYPE, void *p_pValue );
+			void *p_pValue );
 
 	private:
 		FPS_UINT32 ExtractUniformNames( const GLchar *p_Source );
+		FPS_UINT32 Link( );
+		FPS_UINT32 BindUniformNamesToLocations( );
 
-		FPS_UINT32						m_ID;
-		GLuint							m_VertexID;
-		GLuint							m_FragmentID;
-		GLuint							m_GeometryID;
-		GLuint							m_ProgramID;
-		FPS_BOOL						m_Linked;
-		std::map< std::string, GLuint > m_UniformLocationMap;
+		FPS_UINT32									m_ID;
+		GLuint										m_VertexID;
+		GLuint										m_FragmentID;
+		GLuint										m_GeometryID;
+		GLuint										m_ProgramID;
+		FPS_BOOL									m_Linked;
+		std::map< std::string, SHADER_PARAMETER >	m_UniformLocationMap;
 	};
 }
 

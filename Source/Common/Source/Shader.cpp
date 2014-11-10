@@ -3,6 +3,7 @@
 #include <iostream>
 #include <cstdio>
 #include <cstring>
+#include <cstdlib>
 
 namespace FPS
 {
@@ -170,7 +171,7 @@ namespace FPS
 	}
 
 	FPS_UINT32 Shader::SetShaderParameter( const std::string &p_Name,
-		const SHADER_PARAMETER_TYPE, void *p_pValue )
+		void *p_pValue )
 	{
 		return FPS_FAIL;
 	}
@@ -199,31 +200,76 @@ namespace FPS
 				return FPS_FAIL;
 			}
 
-			// Find any arrays and stop progression; making it easier to
-			// separate the uniform name instead of working backward from the
-			// semi-colon and handling spaces, numbers inside the square
-			// brackets and the square brackets
-			FPS_MEMSIZE UniformNameEnd = SourceCopy.find_first_of( '[',
+			// Step 1: Get the type
+			FPS_MEMSIZE TypeStart = SourceCopy.find_first_of( " \t",
 				UniformPosition );
+			// Get rid of any leading whitespace
+			TypeStart = SourceCopy.find_first_not_of( " \t", TypeStart );
+			FPS_MEMSIZE TypeEnd = SourceCopy.find_first_of( " \t", TypeStart );
 
-			--UniformNameEnd;
+			std::string Type = SourceCopy.substr( TypeStart,
+				TypeEnd - TypeStart );
 
-			if( UniformNameEnd > SemiColonPosition )
+			SHADER_PARAMETER ShaderParameter =
+				{ SHADER_PARAMETER_TYPE_UNKNOWN, 1, 0 };
+
+			// Compare all the types here...
+
+			// Step 2: Find the name
+			FPS_MEMSIZE UniformNameStart = SourceCopy.find_first_not_of( " \t",
+				TypeEnd );
+			UniformNameStart = SourceCopy.find_first_not_of( " \t",
+				UniformNameStart );
+			FPS_MEMSIZE UniformNameEnd = SourceCopy.find_first_of( " [;\t",
+				UniformNameStart );
+
+			// Step 3: If we're not finished, check for an array and extract
+			// the dimensions
+			if( UniformNameEnd != SemiColonPosition )
 			{
-				UniformNameEnd = SourceCopy.find_last_not_of( " \t",
-					UniformNameEnd );
+				FPS_MEMSIZE ArrayStart = SourceCopy.find_first_of( '[',
+					UniformPosition );
+				ArrayStart = SourceCopy.find_first_not_of( " \t", ArrayStart );
+				FPS_MEMSIZE ArrayEnd = SourceCopy.find_first_of( ']',
+					ArrayStart );
+
+				if( ArrayStart < SemiColonPosition )
+				{
+					if( ( ArrayEnd != std::string::npos ) &&
+						( ArrayEnd < SemiColonPosition ) )
+					{
+						FPS_MEMSIZE ArrayEndTmp = SourceCopy.find_first_of(
+							" \t", ArrayStart, ArrayEnd - ArrayStart );
+
+						if( ArrayEndTmp != std::string::npos )
+						{
+							ArrayEnd = ArrayEndTmp;
+						}
+					}
+				}
+				else
+				{
+					// There shouldn't be a start of an array without the end
+					// before the semi-colon
+					std::cout << "[FPS::Shader::ExtractUniformNames] <ERROR> "
+						"Incorrect array format.  End bracket was not found "
+						"before the line end" << std::endl;
+					return FPS_FAIL;
+				}
+
+				std::string ArrayString = SourceCopy.substr( ArrayStart,
+					ArrayEnd - ArrayStart );
+				ShaderParameter.ArraySize = atoi( ArrayString.c_str( ) );
 			}
 
-			FPS_MEMSIZE UniformNameStart = SourceCopy.find_last_of( " \t",
-				UniformNameEnd );
-
-			std::pair< std::map< std::string, GLuint >::iterator, bool >
-				InsertResult;
+			std::pair< std::map< std::string,
+				SHADER_PARAMETER >::iterator, bool > InsertResult;
 
 			InsertResult = m_UniformLocationMap.insert(
-				std::pair< std::string, GLuint >(
+				std::pair< std::string, SHADER_PARAMETER >(
 					SourceCopy.substr( UniformNameStart,
-					( UniformNameEnd - UniformNameStart ) + 1 ), 0 ) );
+					( UniformNameEnd - UniformNameStart ) + 1 ),
+					ShaderParameter ) );
 
 			if( InsertResult.second == false )
 			{
