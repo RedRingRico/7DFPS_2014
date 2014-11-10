@@ -19,6 +19,25 @@ namespace FPS
 
 	Shader::~Shader( )
 	{
+		if( m_ProgramID )
+		{
+			glDeleteProgram( m_ProgramID );
+		}
+
+		if( m_VertexID )
+		{
+			glDeleteShader( m_VertexID );
+		}
+
+		if( m_FragmentID )
+		{
+			glDeleteShader( m_FragmentID );
+		}
+
+		if( m_GeometryID )
+		{
+			glDeleteShader( m_GeometryID );
+		}
 	}
 
 	FPS_UINT32 Shader::CreateShaderFromSource( const std::string &p_Source,
@@ -181,9 +200,127 @@ namespace FPS
 	}
 
 	FPS_UINT32 Shader::SetShaderParameter( const std::string &p_Name,
-		void *p_pValue )
+		void *p_pData )
 	{
-		return FPS_FAIL;
+		SHADER_PARAMETER Parameter;
+		std::map< std::string, SHADER_PARAMETER >::iterator Name =
+			m_UniformLocationMap.find( p_Name );
+
+		if( Name == m_UniformLocationMap.end( ) )
+		{
+			std::cout << "[FPS::Shader::SetShaderParameter] <ERROR> Could not "
+				"find parameter name '" << p_Name << "'" << std::endl;
+
+			return FPS_FAIL;
+		}
+
+		Parameter = Name->second;
+
+		switch( Parameter.Type )
+		{
+			case SHADER_PARAMETER_TYPE_FLOAT1:
+			{
+				glUniform1fv( Parameter.Location, Parameter.ArraySize,
+					static_cast< const GLfloat * >( p_pData ) );
+				break;
+			}
+			case SHADER_PARAMETER_TYPE_FLOAT2:
+			{
+				glUniform2fv( Parameter.Location, Parameter.ArraySize,
+					static_cast< const GLfloat * >( p_pData ) );
+				break;
+			}
+			case SHADER_PARAMETER_TYPE_FLOAT3:
+			{
+				glUniform3fv( Parameter.Location, Parameter.ArraySize,
+					static_cast< const GLfloat * >( p_pData ) );
+				break;
+			}
+			case SHADER_PARAMETER_TYPE_FLOAT4:
+			{
+				glUniform4fv( Parameter.Location, Parameter.ArraySize,
+					static_cast< const GLfloat * >( p_pData ) );
+				break;
+			}
+			case SHADER_PARAMETER_TYPE_MATRIX2X2:
+			{
+				glUniformMatrix2fv( Parameter.Location, Parameter.ArraySize,
+					GL_FALSE, static_cast< const GLfloat * >( p_pData ) );
+				break;
+			}
+			case SHADER_PARAMETER_TYPE_MATRIX3X3:
+			{
+				glUniformMatrix3fv( Parameter.Location, Parameter.ArraySize,
+					GL_FALSE, static_cast< const GLfloat * >( p_pData ) );
+				break;
+			}
+			case SHADER_PARAMETER_TYPE_MATRIX4X4:
+			{
+				glUniformMatrix4fv( Parameter.Location, Parameter.ArraySize,
+					GL_FALSE, static_cast< const GLfloat * >( p_pData ) );
+				break;
+			}
+			case SHADER_PARAMETER_TYPE_INT1:
+			case SHADER_PARAMETER_TYPE_BOOL1:
+			{
+				glUniform1iv( Parameter.Location, Parameter.ArraySize,
+					static_cast< GLint * >( p_pData ) );
+				break;
+			}
+			case SHADER_PARAMETER_TYPE_INT2:
+			case SHADER_PARAMETER_TYPE_BOOL2:
+			{
+				glUniform2iv( Parameter.Location, Parameter.ArraySize,
+					static_cast< GLint * >( p_pData ) );
+				break;
+			}
+			case SHADER_PARAMETER_TYPE_INT3:
+			case SHADER_PARAMETER_TYPE_BOOL3:
+			{
+				glUniform3iv( Parameter.Location, Parameter.ArraySize,
+					static_cast< GLint * >( p_pData ) );
+				break;
+			}
+			case SHADER_PARAMETER_TYPE_INT4:
+			case SHADER_PARAMETER_TYPE_BOOL4:
+			{
+				glUniform4iv( Parameter.Location, Parameter.ArraySize,
+					static_cast< GLint * >( p_pData ) );
+				break;
+			}
+			case SHADER_PARAMETER_TYPE_UINT1:
+			{
+				glUniform1uiv( Parameter.Location, Parameter.ArraySize,
+					static_cast< GLuint * >( p_pData ) );
+				break;
+			}
+			case SHADER_PARAMETER_TYPE_UINT2:
+			{
+				glUniform2uiv( Parameter.Location, Parameter.ArraySize,
+					static_cast< GLuint * >( p_pData ) );
+				break;
+			}
+			case SHADER_PARAMETER_TYPE_UINT3:
+			{
+				glUniform3uiv( Parameter.Location, Parameter.ArraySize,
+					static_cast< GLuint * >( p_pData ) );
+				break;
+			}
+			case SHADER_PARAMETER_TYPE_UINT4:
+			{
+				glUniform4uiv( Parameter.Location, Parameter.ArraySize,
+					static_cast< GLuint * >( p_pData ) );
+				break;
+			}
+			case SHADER_PARAMETER_TYPE_UNKNOWN:
+			default:
+			{
+				return FPS_FAIL;
+			}
+
+		}
+
+		return FPS_OK;
 	}
 
 	FPS_UINT32 Shader::ExtractUniformNames( const GLchar *p_pSource )
@@ -286,22 +423,6 @@ namespace FPS
 			else if( Type.compare( "uvec4" ) == 0 )
 			{
 				ShaderParameter.Type = SHADER_PARAMETER_TYPE_UINT4;
-			}
-			else if( Type.compare( "double" ) == 0 )
-			{
-				ShaderParameter.Type = SHADER_PARAMETER_TYPE_DOUBLE1;
-			}
-			else if( Type.compare( "dvec2" ) == 0 )
-			{
-				ShaderParameter.Type = SHADER_PARAMETER_TYPE_DOUBLE2;
-			}
-			else if( Type.compare( "dvec3" ) == 0 )
-			{
-				ShaderParameter.Type = SHADER_PARAMETER_TYPE_DOUBLE3;
-			}
-			else if( Type.compare( "dvec4" ) == 0 )
-			{
-				ShaderParameter.Type = SHADER_PARAMETER_TYPE_DOUBLE4;
 			}
 			else if(	( Type.compare( "mat2" ) == 0 ) ||
 						( Type.compare( "mat2x2" ) == 0 ) )
