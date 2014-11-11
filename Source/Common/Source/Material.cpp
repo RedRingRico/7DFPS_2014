@@ -1,4 +1,5 @@
 #include <Material.hpp>
+#include <Shader.hpp>
 
 namespace FPS
 {
@@ -15,6 +16,7 @@ namespace FPS
 
 	FPS_UINT32 Material::CreateFromFile( const std::string &p_FileName )
 	{
+		Shader MaterialShader;
 		return FPS_FAIL;
 	}
 }

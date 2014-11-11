@@ -332,7 +332,18 @@ namespace FPS
 	FPS_UINT32 Shader::GetShaderParameters(
 		std::list< std::string > &p_Names ) const
 	{
-		return FPS_FAIL;
+		p_Names.clear( );
+
+		std::map< std::string, SHADER_PARAMETER >::const_iterator MapItr =
+			m_UniformLocationMap.begin( );
+
+		while( MapItr != m_UniformLocationMap.end( ) )
+		{
+			p_Names.push_back( MapItr->first );
+			++MapItr;
+		}
+
+		return FPS_OK;
 	}
 
 	FPS_UINT32 Shader::GetDigest( MD5_DIGEST &p_Digest ) const
