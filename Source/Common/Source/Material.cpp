@@ -61,10 +61,10 @@ namespace FPS
 					std::string ShaderSource;
 					FPS_BOOL FromFile = FPS_TRUE;
 
-					if( ShaderRoot[ i ].HasMember( "type" ) )
+					if( ShaderSourceRoot[ i ].HasMember( "type" ) )
 					{
 						std::string TypeString =
-							ShaderRoot[ i ][ "type" ].GetString( );
+							ShaderSourceRoot[ i ][ "type" ].GetString( );
 
 						if( TypeString.compare( "vertex" ) )
 						{
@@ -78,20 +78,26 @@ namespace FPS
 						{
 							Type = SHADER_TYPE_GEOMETRY;
 						}
+						else
+						{
+							return FPS_FAIL;
+						}
 					}
 					else
 					{
 						return FPS_FAIL;
 					}
 
-					if( ShaderRoot[ i ].HasMember( "path" ) )
+					if( ShaderSourceRoot[ i ].HasMember( "path" ) )
 					{
-						ShaderSource = ShaderRoot[ i ][ "path" ].GetString( );
+						ShaderSource =
+							ShaderSourceRoot[ i ][ "path" ].GetString( );
 						FromFile = FPS_TRUE;
 					}
-					else if( ShaderRoot[ i ].HasMember( "code" ) )
+					else if( ShaderSourceRoot[ i ].HasMember( "code" ) )
 					{
-						ShaderSource = ShaderRoot[ i ][ "code" ].GetString( );
+						ShaderSource =
+							ShaderSourceRoot[ i ][ "code" ].GetString( );
 						FromFile = FPS_FALSE;
 					}
 					else

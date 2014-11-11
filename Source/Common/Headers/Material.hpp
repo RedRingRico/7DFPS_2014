@@ -16,6 +16,8 @@ namespace FPS
 
 		FPS_UINT32 CreateFromFile( const std::string &p_FileName );
 
+		FPS_UINT32 Apply( );
+
 	private:
 		MD5_DIGEST	m_MD5Digest;
 		MD5_DIGEST	m_ShaderMD5Digest;
