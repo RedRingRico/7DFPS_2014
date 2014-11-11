@@ -1,13 +1,14 @@
 ###############################################################################
 #                                                  7DFPS Makefile [Linux x86] #
 ###############################################################################
+.SILENT:
 ifndef TOPDIR
 export TOPDIR		:= $(shell cd ../../ && pwd)
 export TOPSRC		= $(TOPDIR)/Source
 export TARGETDIR	= $(TOPDIR)/Bin/$(PLATFORM)/$(ARCH)/$(BITSIZE)
 export OBJSDIR		= $(TOPDIR)/Obj/$(PLATFORM)/$(ARCH)/$(BITSIZE)/GCC/$(GCCVER)/$(BUILD)
 endif
-SOURCEDIR	= Source ../Common/Source
+SOURCEDIR	= Source ../Common/Source ../Libs/hashlib2plus/Source
 
 PROJECT := 7DFPS
 TARGET := $(PROJECT)
@@ -61,7 +62,8 @@ CPPFLAGS	=	-c -m$(BITSIZE) -DFPS_BUILD_$(BUILD_DEF) \
 				-DFPS_PLATFORM_$(BUILD_PLATFORM)_$(BUILD_ARCH) \
 				-DFPS_PLATFORM_$(BUILD_PLATFORM)_$(BUILD_ARCH)_$(BITSIZE) \
 				-DFPS_BITSIZE_$(BITSIZE) -DFPS_ARCH_$(BUILD_ARCH) \
-				-I$(TOPSRC)/$(PLATFORM)/Headers -I$(TOPSRC)/Common/Headers
+				-I$(TOPSRC)/$(PLATFORM)/Headers -I$(TOPSRC)/Common/Headers \
+				-I$(TOPSRC)/Libs/hashlib2plus/Source
 SYSIPATH	=
 INCPATH		=
 SYSLPATH	=	
@@ -163,7 +165,7 @@ $(TARGET): $(OBJS)
 
 %.o: %.cpp
 	@printf "Compiling: $<... "
-	@$(CPP) -MMD -MP -MF $*.d $(CPPFLAGS) $(SYSIPATH) $(INCPATH) \
+	$(CPP) -MMD -MP -MF $*.d $(CPPFLAGS) $(SYSIPATH) $(INCPATH) \
 	$< -o $@ 2> $*.cmsgs;\
 	RETVAL=$$?;\
 	if env | grep -q ^TERM=; then\

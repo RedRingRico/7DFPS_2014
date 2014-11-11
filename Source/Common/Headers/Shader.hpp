@@ -2,10 +2,12 @@
 #define __FPS_SHADER_HPP__
 
 #include <DataTypes.hpp>
+#include <MD5.hpp>
 #include <map>
 #include <string>
 #include <GL/glew.h>
 #include <GL/gl.h>
+#include <hl_md5.h>
 
 namespace FPS
 {
@@ -67,17 +69,21 @@ namespace FPS
 		FPS_UINT32 SetShaderParameter( const std::string &p_Name,
 			void *p_pValue );
 
+		FPS_UINT32 GetDigest( MD5_DIGEST &p_Digest ) const;
+
 	private:
 		FPS_UINT32 ExtractUniformNames( const GLchar *p_Source );
 		FPS_UINT32 Link( );
 		FPS_UINT32 BindUniformNamesToLocations( );
 
-		FPS_UINT32									m_ID;
 		GLuint										m_VertexID;
 		GLuint										m_FragmentID;
 		GLuint										m_GeometryID;
 		GLuint										m_ProgramID;
 		FPS_BOOL									m_Linked;
+		MD5											m_MD5;
+		HL_MD5_CTX									m_MD5Context;
+		MD5_DIGEST									m_MD5Digest;
 		std::map< std::string, SHADER_PARAMETER >	m_UniformLocationMap;
 	};
 }

@@ -8,13 +8,15 @@
 namespace FPS
 {
 	Shader::Shader( ) :
-		m_ID( 0 ),
 		m_VertexID( 0 ),
 		m_FragmentID( 0 ),
 		m_GeometryID( 0 ),
 		m_ProgramID( 0 ),
 		m_Linked( FPS_FALSE )
 	{
+		MD5Zero( m_MD5Digest );
+
+		m_MD5.MD5Init( &m_MD5Context );
 	}
 
 	Shader::~Shader( )
@@ -142,6 +144,10 @@ namespace FPS
 				pFile = FPS_NULL;
 			}
 		}
+
+		m_MD5.MD5Update( &m_MD5Context,
+			reinterpret_cast< unsigned char * >( pSource ),
+			strlen( pSource ) );
 
 		glShaderSource( ShaderID, 1,
 			const_cast< const GLchar ** >( &pSource ), &SourceLength );
@@ -321,6 +327,18 @@ namespace FPS
 		}
 
 		return FPS_OK;
+	}
+
+	FPS_UINT32 Shader::GetDigest( MD5_DIGEST &p_Digest ) const
+	{
+		if( m_Linked )
+		{
+			memcpy( &p_Digest, &m_MD5Digest, sizeof( m_MD5Digest ) );
+
+			return FPS_OK;
+		}
+
+		return FPS_FAIL;
 	}
 
 	FPS_UINT32 Shader::ExtractUniformNames( const GLchar *p_pSource )
@@ -582,6 +600,8 @@ namespace FPS
 		}
 
 		m_Linked = FPS_TRUE;
+
+		m_MD5.MD5Final( m_MD5Digest.Digest, &m_MD5Context );
 
 		return FPS_OK;
 	}
