@@ -1,16 +1,17 @@
 #include <Material.hpp>
 #include <Shader.hpp>
+#include <MaterialManager.hpp>
 #include <rapidjson/document.h>
 #include <rapidjson/writer.h>
 #include <rapidjson/stringbuffer.h>
 
 namespace FPS
 {
-	Material::Material( )
+	Material::Material( MaterialManager *p_pMaterialManager ) :
+		m_pMaterialManager( p_pMaterialManager )
 	{
 		MD5Zero( m_MD5Digest );
 		MD5Zero( m_ShaderMD5Digest );
-		MD5Zero( m_TextureMD5Digest );
 	}
 
 	Material::~Material( )
@@ -120,6 +121,8 @@ namespace FPS
 		}
 
 		MaterialShader.GetShaderParameters( m_ShaderParameters );
+
+		m_pMaterialManager->AddShader( MaterialShader );
 
 		return FPS_OK;
 	}

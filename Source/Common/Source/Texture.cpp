@@ -2,5 +2,12 @@
 
 namespace FPS
 {
+	Texture::Texture( )
+	{
+	}
+
+	Texture::~Texture( )
+	{
+	}
 }
 
