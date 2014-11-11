@@ -329,6 +329,12 @@ namespace FPS
 		return FPS_OK;
 	}
 
+	FPS_UINT32 Shader::GetShaderParameters(
+		std::list< std::string > &p_Names ) const
+	{
+		return FPS_FAIL;
+	}
+
 	FPS_UINT32 Shader::GetDigest( MD5_DIGEST &p_Digest ) const
 	{
 		if( m_Linked )

@@ -3,6 +3,7 @@
 
 #include <DataTypes.hpp>
 #include <MD5.hpp>
+#include <list>
 #include <map>
 #include <string>
 #include <GL/glew.h>
@@ -69,7 +70,11 @@ namespace FPS
 		FPS_UINT32 SetShaderParameter( const std::string &p_Name,
 			void *p_pValue );
 
+		FPS_UINT32 GetShaderParameters(
+			std::list< std::string > &p_Names ) const;
+
 		FPS_UINT32 GetDigest( MD5_DIGEST &p_Digest ) const;
+
 
 	private:
 		FPS_UINT32 ExtractUniformNames( const GLchar *p_Source );

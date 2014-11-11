@@ -63,7 +63,8 @@ CPPFLAGS	=	-c -m$(BITSIZE) -DFPS_BUILD_$(BUILD_DEF) \
 				-DFPS_PLATFORM_$(BUILD_PLATFORM)_$(BUILD_ARCH)_$(BITSIZE) \
 				-DFPS_BITSIZE_$(BITSIZE) -DFPS_ARCH_$(BUILD_ARCH) \
 				-I$(TOPSRC)/$(PLATFORM)/Headers -I$(TOPSRC)/Common/Headers \
-				-I$(TOPSRC)/Libs/hashlib2plus/Source
+				-I$(TOPSRC)/Libs/hashlib2plus/Source \
+				-I$(TOPSRC)/Libs/rapidjaon/include
 SYSIPATH	=
 INCPATH		=
 SYSLPATH	=	

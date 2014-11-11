@@ -2,6 +2,9 @@
 #define __FPS_MATERIAL_HPP__
 
 #include <DataTypes.hpp>
+#include <MD5.hpp>
+#include <list>
+#include <string>
 
 namespace FPS
 {
@@ -11,13 +14,14 @@ namespace FPS
 		Material( );
 		~Material( );
 
-		FPS_UINT32 SetTexture( const FPS_UINT32 p_TextureID );
-		FPS_UINT32 SetShader( const FPS_UINT32 p_ShaderID );
+		FPS_UINT32 CreateFromFile( const std::string &p_FileName );
 
 	private:
-		FPS_UINT32	m_ID;
-		FPS_UINT32	m_TextureID;
-		FPS_UINT32	m_ShaderID;
+		MD5_DIGEST	m_MD5Digest;
+		MD5_DIGEST	m_ShaderMD5Digest;
+		MD5_DIGEST	m_TextureMD5Digest;
+
+		std::list< std::string >	m_ShaderParameters;
 	};
 }
 
