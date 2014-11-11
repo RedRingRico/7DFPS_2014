@@ -16,6 +16,8 @@ namespace FPS
 		Material( MaterialManager *p_pMaterialManager );
 		~Material( );
 
+		FPS_UINT32 GetDigest( MD5_DIGEST &p_Digest ) const;
+
 		FPS_UINT32 CreateFromFile( const std::string &p_FileName );
 
 		FPS_UINT32 SetShaderParameter( const std::string &p_Name,

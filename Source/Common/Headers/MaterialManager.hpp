@@ -16,7 +16,8 @@ namespace FPS
 		MaterialManager( );
 		~MaterialManager( );
 
-		MD5_DIGEST CreateMaterial( const std::string &p_FileName );
+		FPS_UINT32 CreateMaterial( const std::string &p_FileName,
+			MD5_DIGEST &p_Digest );
 
 		FPS_UINT32 ApplyMaterial( const MD5_DIGEST &p_Digest );
 

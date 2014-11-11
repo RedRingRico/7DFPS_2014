@@ -20,5 +20,28 @@ namespace FPS
 	{
 		memset( &p_Digest, 0, sizeof( p_Digest ) );
 	}
+
+	bool operator<( const MD5_DIGEST &p_Left, const MD5_DIGEST &p_Right )
+	{
+		// Keep comparing bytes until one of them is smaller than the other
+		for( FPS_MEMSIZE i = 0; i < 16; ++i )
+		{
+			if( p_Left.Digest[ i ] == p_Right.Digest[ i ] )
+			{
+				continue;
+			}
+
+			if( p_Left.Digest[ i ] < p_Right.Digest[ i ] )
+			{
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+
+		return true;
+	}
 }
 

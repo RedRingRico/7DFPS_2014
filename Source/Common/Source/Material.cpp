@@ -1,5 +1,9 @@
 #include <Material.hpp>
 #include <Shader.hpp>
+#include <Memory.hpp>
+#include <hl_md5.h>
+#include <iostream>
+#include <cstring>
 #include <MaterialManager.hpp>
 #include <rapidjson/document.h>
 #include <rapidjson/writer.h>
@@ -16,6 +20,13 @@ namespace FPS
 
 	Material::~Material( )
 	{
+	}
+
+	FPS_UINT32 Material::GetDigest( MD5_DIGEST &p_Digest ) const
+	{
+		memcpy( &p_Digest, &m_MD5Digest, sizeof( m_MD5Digest ) );
+
+		return FPS_OK;
 	}
 
 	FPS_UINT32 Material::CreateFromFile( const std::string &p_FileName )
@@ -81,11 +92,13 @@ namespace FPS
 						}
 						else
 						{
+							SafeDeleteArray< char >( pSource );
 							return FPS_FAIL;
 						}
 					}
 					else
 					{
+						SafeDeleteArray< char >( pSource );
 						return FPS_FAIL;
 					}
 
@@ -103,6 +116,7 @@ namespace FPS
 					}
 					else
 					{
+						SafeDeleteArray< char >( pSource );
 						return FPS_FAIL;
 					}
 
@@ -112,17 +126,38 @@ namespace FPS
 			}
 			else
 			{
+			SafeDeleteArray< char >( pSource );
 				return FPS_FAIL;
 			}
 		}
 		else
 		{
+			SafeDeleteArray< char >( pSource );
 			return FPS_FAIL;
 		}
 
 		MaterialShader.GetShaderParameters( m_ShaderParameters );
 
-		m_pMaterialManager->AddShader( MaterialShader );
+		MaterialShader.Link( );
+
+		if( m_pMaterialManager->AddShader( MaterialShader ) == FPS_FAIL )
+		{
+			std::cout << "[FPS::Material::CreateFromFile] <INFO> Shader "
+				"already in material manager" << std::endl;
+		}
+
+		MD5 MaterialMD5;
+		HL_MD5_CTX MaterialMD5Context;
+		
+		MaterialMD5.MD5Init( &MaterialMD5Context );
+
+		MaterialMD5.MD5Update( &MaterialMD5Context,
+			reinterpret_cast< unsigned char * >( pSource ),
+			strlen( pSource ) );
+
+		SafeDeleteArray< char >( pSource );
+
+		MaterialMD5.MD5Final( m_MD5Digest.Digest, &MaterialMD5Context );
 
 		return FPS_OK;
 	}

@@ -12,6 +12,8 @@ namespace FPS
 
 	FPS_BOOL MD5Equal( const MD5_DIGEST &p_Left, const MD5_DIGEST &p_Right );
 	void MD5Zero( MD5_DIGEST &p_Digest );
+
+	bool operator<( const MD5_DIGEST &p_Left, const MD5_DIGEST &p_Right );
 }
 
 #endif // __7DFPS_MD5_HPP__

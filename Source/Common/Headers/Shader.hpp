@@ -75,10 +75,10 @@ namespace FPS
 
 		FPS_UINT32 GetDigest( MD5_DIGEST &p_Digest ) const;
 
+		FPS_UINT32 Link( );
 
 	private:
 		FPS_UINT32 ExtractUniformNames( const GLchar *p_Source );
-		FPS_UINT32 Link( );
 		FPS_UINT32 BindUniformNamesToLocations( );
 
 		GLuint										m_VertexID;
