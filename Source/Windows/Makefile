@@ -9,7 +9,7 @@ export TOPSRC		= $(TOPDIR)/Source
 export TARGETDIR	= $(TOPDIR)/Bin/$(PLATFORM)/$(ARCH)/$(BITSIZE)
 export OBJSDIR		= $(TOPDIR)/Obj/$(PLATFORM)/$(ARCH)/$(BITSIZE)/GCC/$(GCCVER)/$(BUILD)
 endif
-SOURCEDIR	= Source ../Common/Source
+SOURCEDIR	= Source ../Common/Source ../Libs/hashlib2plus/Source
 
 PROJECT := 7DFPS
 TARGET := $(PROJECT)
@@ -68,7 +68,9 @@ CPPFLAGS	=	-c -DWIN32 -D_WINDOWS -D_UNICODE -DUNICODE \
 				-DFPS_PLATFORM_$(BUILD_PLATFORM)_$(BUILD_ARCH) \
 				-DFPS_PLATFORM_$(BUILD_PLATFORM)_$(BUILD_ARCH)_$(BITSIZE) \
 				-DFPS_BITSIZE_$(BITSIZE) -DFPS_ARCH_$(BUILD_ARCH) \
-				-I$(TOPSRC)/$(PLATFORM)/Headers -I$(TOPSRC)/Common/Headers
+				-I$(TOPSRC)/$(PLATFORM)/Headers -I$(TOPSRC)/Common/Headers \
+				-I$(TOPSRC)/Libs/hashlib2plus/Source \
+				-I$(TOPSRC)/Libs/rapidjson/include
 SYSIPATH	=
 INCPATH		=
 SYSLPATH	=
