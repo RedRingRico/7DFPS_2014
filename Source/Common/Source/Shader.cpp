@@ -409,7 +409,7 @@ namespace FPS
 			std::cout << "End: " << TypeEnd << std::endl;
 
 			SHADER_PARAMETER ShaderParameter =
-				{ SHADER_PARAMETER_TYPE_UNKNOWN, 1, 0 };
+				{ SHADER_PARAMETER_TYPE_UNKNOWN, 0, 1 };
 
 			if( Type.compare( "float" ) == 0 )
 			{
@@ -512,7 +512,8 @@ namespace FPS
 			{
 				FPS_MEMSIZE ArrayStart = SourceCopy.find_first_of( '[',
 					UniformPosition );
-				ArrayStart = SourceCopy.find_first_not_of( " \t", ArrayStart );
+				ArrayStart = SourceCopy.find_first_not_of( " \t",
+					ArrayStart + 1 );
 				FPS_MEMSIZE ArrayEnd = SourceCopy.find_first_of( ']',
 					ArrayStart );
 
@@ -528,6 +529,7 @@ namespace FPS
 						{
 							ArrayEnd = ArrayEndTmp;
 						}
+
 					}
 				}
 				else
@@ -543,32 +545,38 @@ namespace FPS
 				std::string ArrayString = SourceCopy.substr( ArrayStart,
 					ArrayEnd - ArrayStart );
 				ShaderParameter.ArraySize = atoi( ArrayString.c_str( ) );
+				std::cout << "Array start: " << ArrayStart << std::endl;
+				std::cout << "Array end: " << ArrayEnd << std::endl;
+
+				std::cout << "Array string: " << ArrayString << std::endl;
 			}
 
 			std::pair< std::map< std::string,
 				SHADER_PARAMETER >::iterator, bool > InsertResult;
 
+			std::string UniformName = SourceCopy.substr( UniformNameStart,
+				UniformNameEnd - UniformNameStart );
+
 			InsertResult = m_UniformLocationMap.insert(
-				std::pair< std::string, SHADER_PARAMETER >(
-					SourceCopy.substr( UniformNameStart,
-					( UniformNameEnd - UniformNameStart ) + 1 ),
+				std::pair< std::string, SHADER_PARAMETER >( UniformName,
 					ShaderParameter ) );
 
 			if( InsertResult.second == false )
 			{
 				std::cout << "[FPS::Shader::ExtractUniformNames] <WARN> "
-					"Duplicate value for " <<
-					SourceCopy.substr( UniformNameStart,
-						( UniformNameEnd - UniformNameStart ) ) <<
-					" found" << std::endl;
+					"Duplicate value for " << UniformName << " found" <<
+					std::endl;
 			}
 
 			std::cout << "Type: " << Type << std::endl;
-			std::cout << "Name: " << SourceCopy.substr( UniformNameStart,
-						( UniformNameEnd - UniformNameStart ) ) << std::endl;
+			std::cout << "Name: " << UniformName << std::endl;
+			std::cout << "Array size: " << ShaderParameter.ArraySize <<
+				std::endl;
 
 			UniformPosition = SourceCopy.find( "uniform", SemiColonPosition );
 		}
+
+		std::cout << "\n";
 		
 		return FPS_OK;
 	}
