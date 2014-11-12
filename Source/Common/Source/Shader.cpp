@@ -21,6 +21,7 @@ namespace FPS
 
 	Shader::~Shader( )
 	{
+		std::cout << "Deleting shader" << std::endl;/*
 		if( m_ProgramID )
 		{
 			glDeleteProgram( m_ProgramID );
@@ -39,7 +40,7 @@ namespace FPS
 		if( m_GeometryID )
 		{
 			glDeleteShader( m_GeometryID );
-		}
+		}*/
 	}
 
 	FPS_UINT32 Shader::CreateShaderFromSource( const std::string &p_Source,
@@ -358,6 +359,8 @@ namespace FPS
 		if( m_Linked )
 		{
 			memcpy( &p_Digest, &m_MD5Digest, sizeof( m_MD5Digest ) );
+
+			std::cout << "Shader MD5: " << MD5AsString( m_MD5Digest ) << std::endl;
 
 			return FPS_OK;
 		}

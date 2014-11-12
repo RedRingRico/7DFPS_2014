@@ -79,6 +79,8 @@ namespace FPS
 		FPS_FLOAT32 &operator[ ]( const FPS_MEMSIZE p_Index );
 		FPS_FLOAT32 operator[ ]( const FPS_MEMSIZE p_Index ) const;
 
+		void GetAsFloatArray( FPS_FLOAT32 p_Raw [16 ] ) const;
+
 	private:
 		// The matrix is stored as follows:
 		// 0 4 8  12

@@ -1,5 +1,6 @@
 #include <PolygonCache.hpp>
 #include <Memory.hpp>
+#include <iostream>
 
 #define BUFFER_OFFSET( Offset ) ( ( char * )FPS_NULL + ( Offset ) )
 
@@ -52,13 +53,17 @@ namespace FPS
 		{
 			m_pCache[ Index ].pVertices = new FPS_BYTE[ p_VertexCount ];
 			m_pCache[ Index ].pIndices = new FPS_UINT16[ p_IndexCount ];
-			m_pCache[ Index ].VertexCount = p_VertexCount;
-			m_pCache[ Index ].IndexCount = p_IndexCount;
+			m_pCache[ Index ].VertexCount = 0;
+			m_pCache[ Index ].IndexCount = 0;
 			m_pCache[ Index ].PolygonCount = 0;
 			m_pCache[ Index ].MaterialID = 0;
 			glGenBuffers( 1, &m_pCache[ Index ].VertexBufferID );
 			glGenBuffers( 1, &m_pCache[ Index ].IndexBufferID );
 			glGenVertexArrays( 1, &m_pCache[ Index ].VertexArrayID );
+
+			std::cout << "Bound VB: " << m_pCache[ Index ].VertexBufferID <<
+				" | IB: " << m_pCache[ Index ].IndexBufferID << " | VAO: " <<
+				m_pCache[ Index ].VertexArrayID << std::endl;
 
 			glBindVertexArray( m_pCache[ Index ].VertexArrayID );
 			glBindBuffer( GL_ARRAY_BUFFER, m_pCache[ Index ].VertexBufferID );
@@ -90,6 +95,7 @@ namespace FPS
 					case 1:
 					{
 						Type = GL_FLOAT;
+						std::cout << "Float | " << Dimension << " // Stride " << m_Stride << std::endl;
 						TypeSize = sizeof( FPS_FLOAT32 );
 						break;
 					}
@@ -238,6 +244,11 @@ namespace FPS
 
 		glBindVertexArray( m_pCache[ CacheLine ].VertexArrayID );
 
+		glBindBuffer( GL_ARRAY_BUFFER, m_pCache[ CacheLine ].VertexBufferID );
+		glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, m_pCache[ CacheLine ].IndexBufferID );
+
+		std::cout << "Bound VAO: " << m_pCache[ CacheLine ].VertexArrayID << std::endl;
+
 		glBufferSubData( GL_ARRAY_BUFFER,
 			m_pCache[ CacheLine ].VertexCount * m_Stride,
 			p_VertexCount * m_Stride, p_pVertices );
@@ -276,17 +287,19 @@ namespace FPS
 		}
 
 		glBindVertexArray( m_pCache[ p_Index ].VertexArrayID );
+		glBindBuffer( GL_ARRAY_BUFFER, m_pCache[ p_Index ].VertexBufferID );
+		glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, m_pCache[ p_Index ].IndexBufferID );
 
 		glDrawElements( m_pCache[ p_Index ].PrimitiveType,
 			m_pCache[ p_Index ].IndexCount, GL_UNSIGNED_SHORT,
 			( GLubyte * )FPS_NULL + 0 );
 
 		glBindVertexArray( 0 );
-
+/*
 		m_pCache[ p_Index ].VertexCount = 0;
 		m_pCache[ p_Index ].IndexCount = 0;
 		m_pCache[ p_Index ].PolygonCount = 0;
-		m_pCache[ p_Index ].MaterialID = 0;
+		m_pCache[ p_Index ].MaterialID = 0;*/
 	}
 
 	FPS_MEMSIZE PolygonCache::FlushFullestLine( )

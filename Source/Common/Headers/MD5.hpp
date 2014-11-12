@@ -2,6 +2,7 @@
 #define __7DFPS_MD5_HPP__
 
 #include <DataTypes.hpp>
+#include <string>
 
 namespace FPS
 {
@@ -12,6 +13,7 @@ namespace FPS
 
 	FPS_BOOL MD5Equal( const MD5_DIGEST &p_Left, const MD5_DIGEST &p_Right );
 	void MD5Zero( MD5_DIGEST &p_Digest );
+	std::string MD5AsString( const MD5_DIGEST &p_Digest );
 
 	bool operator<( const MD5_DIGEST &p_Left, const MD5_DIGEST &p_Right );
 }

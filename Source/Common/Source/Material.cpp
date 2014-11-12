@@ -187,8 +187,10 @@ namespace FPS
 		MaterialMD5.MD5Final( m_MD5Digest.Digest, &MaterialMD5Context );
 
 		MaterialShader.GetShaderParameters( m_ShaderParameters );
-
 		MaterialShader.Link( );
+		MaterialShader.GetDigest( m_ShaderMD5Digest );
+
+		std::cout << "Created a material: " << MD5AsString( m_MD5Digest ) << std::endl;
 
 		if( m_pMaterialManager->AddShader( MaterialShader ) == FPS_FAIL )
 		{
@@ -201,7 +203,8 @@ namespace FPS
 
 	FPS_UINT32 Material::GetShader( MD5_DIGEST &p_Digest ) const
 	{
-		memcpy( &p_Digest, &m_MD5Digest, sizeof( m_MD5Digest ) );
+		std::cout << "Shader: " << MD5AsString( m_ShaderMD5Digest ) << std::endl;
+		memcpy( &p_Digest, &m_ShaderMD5Digest, sizeof( m_ShaderMD5Digest ) );
 
 		return FPS_OK;
 	}

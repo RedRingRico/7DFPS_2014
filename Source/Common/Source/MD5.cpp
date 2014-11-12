@@ -1,5 +1,6 @@
 #include <MD5.hpp>
 #include <cstring>
+#include <sstream>
 
 namespace FPS
 {
@@ -19,6 +20,17 @@ namespace FPS
 	void MD5Zero( MD5_DIGEST &p_Digest )
 	{
 		memset( &p_Digest, 0, sizeof( p_Digest ) );
+	}
+
+	std::string MD5AsString( const MD5_DIGEST &p_Digest )
+	{
+		std::stringstream Stream;
+		for( FPS_MEMSIZE i = 0; i < 16; ++i )
+		{
+			Stream << std::hex << static_cast< int >( p_Digest.Digest[ i ] );
+		}
+
+		return Stream.str( );
 	}
 
 	bool operator<( const MD5_DIGEST &p_Left, const MD5_DIGEST &p_Right )

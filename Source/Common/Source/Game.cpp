@@ -104,9 +104,9 @@ namespace FPS
 		FPS_FLOAT32 Vertices[ ] =
 		// Position | Colour
 		{
-			-10.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f,
-			10.0f, 10.0f, 0.0f, 1.0f, 1.0f, 1.0f,
-			10.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f
+			-0.5f, -0.5f, 1.0f, 1.0f, 0.0f, 0.0f,
+			0.0f, 0.5f, 1.0f, 1.0f, 0.0f, 1.0f,
+			0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 0.0f
 		};
 
 		FPS_UINT16 Indices[ ] =
@@ -136,6 +136,7 @@ namespace FPS
 			}
 
 			m_Renderer.Clear( FPS_TRUE, FPS_TRUE, FPS_TRUE );
+			MatMan.ApplyMaterial( Digest );
 			PolyCache.FlushAllLines( );
 			m_Renderer.SwapBuffers( );
 		}

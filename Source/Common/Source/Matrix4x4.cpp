@@ -1,6 +1,7 @@
 #include <Matrix4x4.hpp>
 #include <Vector4.hpp>
 #include <Maths.hpp>
+#include <cstring>
 #include <cmath>
 
 namespace FPS
@@ -358,6 +359,12 @@ namespace FPS
 		return m_M[ p_Index ];
 	}
 
+
+	void Matrix4x4::GetAsFloatArray( FPS_FLOAT32 p_Raw[ 16 ] ) const
+	{
+		memcpy( p_Raw, m_M, sizeof( m_M ) );
+	}
+
 	Vector4 operator*( const Vector4 &p_Vector, const Matrix4x4 &p_Matrix )
 	{
 		Vector4 Multiply;
@@ -384,5 +391,6 @@ namespace FPS
 
 		return Multiply;
 	}
+
 }
 
