@@ -374,19 +374,16 @@ namespace FPS
 		// semi-colon indicating the end of the line
 		std::string SourceCopy( p_pSource );
 
-		std::cout << "Extracting uniform names" << std::endl;
-		std::cout << "Source:" << std::endl << p_pSource << std::endl;
-
 		FPS_MEMSIZE UniformPosition = SourceCopy.find( "uniform" );
 
 		while( UniformPosition != std::string::npos )
 		{
 			// Get the first set of non-whitespace characters before the semi-
 			// colon
-			FPS_MEMSIZE SemiColonPosition = SourceCopy.find_first_of( ';',
+			FPS_MEMSIZE DelimiterPosition = SourceCopy.find_first_of( ",;",
 				UniformPosition );
 
-			if( SemiColonPosition == std::string::npos )
+			if( DelimiterPosition == std::string::npos )
 			{
 				std::cout << "[FPS::Shader::ExtractUniformNames] <ERROR> "
 					"Semi-colon was not found in string" << std::endl;
@@ -403,10 +400,6 @@ namespace FPS
 
 			std::string Type = SourceCopy.substr( TypeStart,
 				TypeEnd - TypeStart );
-
-			std::cout << "uniform start: " << UniformPosition << std::endl;
-			std::cout << "Start: " << TypeStart << std::endl;
-			std::cout << "End: " << TypeEnd << std::endl;
 
 			SHADER_PARAMETER ShaderParameter =
 				{ SHADER_PARAMETER_TYPE_UNKNOWN, 0, 1 };
@@ -503,77 +496,120 @@ namespace FPS
 				TypeEnd );
 			UniformNameStart = SourceCopy.find_first_not_of( " \t",
 				UniformNameStart );
-			FPS_MEMSIZE UniformNameEnd = SourceCopy.find_first_of( " [;\t",
+			FPS_MEMSIZE UniformNameEnd = SourceCopy.find_first_of( ", [;\t",
+				UniformNameStart );
+			FPS_MEMSIZE CommaLocation = SourceCopy.find_first_of( ",",
+				UniformNameStart );
+			FPS_MEMSIZE EndOfLine = SourceCopy.find_first_of( ';',
 				UniformNameStart );
 
-			// Step 3: If we're not finished, check for an array and extract
-			// the dimensions
-			if( UniformNameEnd != SemiColonPosition )
+			FPS_BOOL DoneProcessing = FPS_FALSE;
+
+			// Step 3: If we're not finished, check for more uniforms as well
+			// as uniforms with arrays
+			do
 			{
+				// Step 3a: Get the uniform's name
+				std::string UniformName = SourceCopy.substr( UniformNameStart,
+					UniformNameEnd - UniformNameStart );
+
+				// Step 3b: Determine if the parameter is an array
 				FPS_MEMSIZE ArrayStart = SourceCopy.find_first_of( '[',
-					UniformPosition );
-				ArrayStart = SourceCopy.find_first_not_of( " \t",
-					ArrayStart + 1 );
-				FPS_MEMSIZE ArrayEnd = SourceCopy.find_first_of( ']',
-					ArrayStart );
+					UniformNameEnd );
 
-				if( ArrayStart < SemiColonPosition )
+				FPS_MEMSIZE LastItem = SourceCopy.find_first_not_of( " \t",
+					UniformNameEnd );
+				FPS_MEMSIZE ArrayEnd = 0;
+				FPS_BOOL FoundArray = FPS_FALSE;
+
+				if( ( ArrayStart < EndOfLine ) &&
+					( ArrayStart != std::string::npos ) )
 				{
-					if( ( ArrayEnd != std::string::npos ) &&
-						( ArrayEnd < SemiColonPosition ) )
+					ArrayStart = SourceCopy.find_first_not_of( " \t",
+						ArrayStart + 1 );
+					ArrayEnd = SourceCopy.find_first_of( ']',
+						ArrayStart );
+
+					if( ( ArrayStart < DelimiterPosition ) ||
+						( ArrayStart < CommaLocation ) )
 					{
-						FPS_MEMSIZE ArrayEndTmp = SourceCopy.find_first_of(
-							" \t", ArrayStart, ArrayEnd - ArrayStart );
-
-						if( ArrayEndTmp != std::string::npos )
+						if( ( ArrayEnd != std::string::npos ) &&
+							( ( ArrayEnd < DelimiterPosition ) ||
+								( ArrayEnd < CommaLocation ) ) )
 						{
-							ArrayEnd = ArrayEndTmp;
-						}
+							FPS_MEMSIZE ArrayEndTmp = SourceCopy.find_first_of(
+								" \t", ArrayStart, ArrayEnd - ArrayStart );
 
+							LastItem = SourceCopy.find_first_not_of( " \t",
+								ArrayEnd + 1 );
+
+							if( ArrayEndTmp != std::string::npos )
+							{
+								ArrayEnd = ArrayEndTmp;
+							}
+
+							FoundArray = FPS_TRUE;
+
+						}
 					}
+				}
+
+				if( FoundArray )
+				{
+					std::string ArrayString = SourceCopy.substr( ArrayStart,
+						ArrayEnd - ArrayStart );
+					ShaderParameter.ArraySize = atoi( ArrayString.c_str( ) );
 				}
 				else
 				{
-					// There shouldn't be a start of an array without the end
-					// before the semi-colon
-					std::cout << "[FPS::Shader::ExtractUniformNames] <ERROR> "
-						"Incorrect array format.  End bracket was not found "
-						"before the line end" << std::endl;
-					return FPS_FAIL;
+					ShaderParameter.ArraySize = 1;
 				}
 
-				std::string ArrayString = SourceCopy.substr( ArrayStart,
-					ArrayEnd - ArrayStart );
-				ShaderParameter.ArraySize = atoi( ArrayString.c_str( ) );
-				std::cout << "Array start: " << ArrayStart << std::endl;
-				std::cout << "Array end: " << ArrayEnd << std::endl;
+				// Step 3c: Use the comma to determine if there are more to
+				// check
+				if( CommaLocation < EndOfLine )
+				{
+					LastItem = SourceCopy.find_first_not_of( " \t",
+						CommaLocation );
+				}
 
-				std::cout << "Array string: " << ArrayString << std::endl;
-			}
+				std::pair< std::map< std::string,
+					SHADER_PARAMETER >::iterator, bool > InsertResult;
 
-			std::pair< std::map< std::string,
-				SHADER_PARAMETER >::iterator, bool > InsertResult;
+				UniformName = SourceCopy.substr( UniformNameStart,
+					UniformNameEnd - UniformNameStart );
 
-			std::string UniformName = SourceCopy.substr( UniformNameStart,
-				UniformNameEnd - UniformNameStart );
+				InsertResult = m_UniformLocationMap.insert(
+					std::pair< std::string, SHADER_PARAMETER >( UniformName,
+						ShaderParameter ) );
 
-			InsertResult = m_UniformLocationMap.insert(
-				std::pair< std::string, SHADER_PARAMETER >( UniformName,
-					ShaderParameter ) );
+				if( InsertResult.second == false )
+				{
+					std::cout << "[FPS::Shader::ExtractUniformNames] <WARN> "
+						"Duplicate value for " << UniformName << " found" <<
+						std::endl;
+				}
+				
+				if( LastItem == EndOfLine )
+				{
+					DoneProcessing = FPS_TRUE;
 
-			if( InsertResult.second == false )
-			{
-				std::cout << "[FPS::Shader::ExtractUniformNames] <WARN> "
-					"Duplicate value for " << UniformName << " found" <<
-					std::endl;
-			}
+					continue;
+				}
 
-			std::cout << "Type: " << Type << std::endl;
-			std::cout << "Name: " << UniformName << std::endl;
-			std::cout << "Array size: " << ShaderParameter.ArraySize <<
-				std::endl;
+				// Get the next uniform and comma location
+				UniformNameStart = SourceCopy.find_first_not_of( " \t",
+					LastItem + 1 );
+				UniformNameStart = SourceCopy.find_first_not_of( " \t",
+					UniformNameStart );
+				UniformNameEnd = SourceCopy.find_first_of( ", [;\t",
+					UniformNameStart );
 
-			UniformPosition = SourceCopy.find( "uniform", SemiColonPosition );
+				CommaLocation = SourceCopy.find_first_of( ",",
+					UniformNameStart );
+			}while( DoneProcessing == FPS_FALSE );
+
+			UniformPosition = SourceCopy.find( "uniform", DelimiterPosition );
 		}
 
 		std::cout << "\n";
