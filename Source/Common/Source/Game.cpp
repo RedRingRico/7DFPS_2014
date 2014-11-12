@@ -96,6 +96,10 @@ namespace FPS
 			return FPS_FAIL;
 		}
 
+		PolygonCache PolyCache;
+
+		PolyCache.Create( 1000, 1000, 5, 0x66 );
+
 		FPS_FLOAT32 Vertices[ ] =
 		// Position | Colour
 		{
@@ -103,6 +107,15 @@ namespace FPS
 			10.0f, 10.0f, 0.0f, 1.0f, 1.0f, 1.0f,
 			10.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f
 		};
+
+		FPS_UINT16 Indices[ ] =
+		{
+			0, 1, 2
+		};
+
+		PolyCache.AddPolygons( 3, 3,
+			reinterpret_cast< const FPS_BYTE * >( Vertices ), Indices,
+			1, GL_TRIANGLES );
 
 		while( Run )
 		{
@@ -122,6 +135,7 @@ namespace FPS
 			}
 
 			m_Renderer.Clear( FPS_TRUE, FPS_TRUE, FPS_TRUE );
+			PolyCache.FlushAllLines( );
 			m_Renderer.SwapBuffers( );
 		}
 
