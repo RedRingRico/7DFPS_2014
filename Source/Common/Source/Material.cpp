@@ -136,16 +136,6 @@ namespace FPS
 			return FPS_FAIL;
 		}
 
-		MaterialShader.GetShaderParameters( m_ShaderParameters );
-
-		MaterialShader.Link( );
-
-		if( m_pMaterialManager->AddShader( MaterialShader ) == FPS_FAIL )
-		{
-			std::cout << "[FPS::Material::CreateFromFile] <INFO> Shader "
-				"already in material manager" << std::endl;
-		}
-
 		MD5 MaterialMD5;
 		HL_MD5_CTX MaterialMD5Context;
 		
@@ -158,6 +148,23 @@ namespace FPS
 		SafeDeleteArray< char >( pSource );
 
 		MaterialMD5.MD5Final( m_MD5Digest.Digest, &MaterialMD5Context );
+
+		MaterialShader.GetShaderParameters( m_ShaderParameters );
+
+		MaterialShader.Link( );
+
+		if( m_pMaterialManager->AddShader( MaterialShader ) == FPS_FAIL )
+		{
+			std::cout << "[FPS::Material::CreateFromFile] <INFO> Shader "
+				"already in material manager" << std::endl;
+		}
+
+		return FPS_OK;
+	}
+
+	FPS_UINT32 Material::GetShader( MD5_DIGEST &p_Digest ) const
+	{
+		memcpy( &p_Digest, &m_MD5Digest, sizeof( m_MD5Digest ) );
 
 		return FPS_OK;
 	}

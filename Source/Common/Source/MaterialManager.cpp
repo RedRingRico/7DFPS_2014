@@ -1,5 +1,4 @@
 #include <MaterialManager.hpp>
-#include <hl_md5.h>
 #include <iostream>
 
 namespace FPS
@@ -28,19 +27,103 @@ namespace FPS
 		{
 			return FPS_FAIL;
 		}
-		
+
 		return FPS_OK;
     }
 
     FPS_UINT32 MaterialManager::ApplyMaterial( const MD5_DIGEST &p_Digest )
     {
-		return FPS_FAIL;
+		std::map< MD5_DIGEST, Material >::const_iterator MaterialItr =
+			m_Materials.begin( );
+
+		MD5_DIGEST MaterialDigest;
+
+		while( MaterialItr != m_Materials.end( ) )
+		{
+			if( MD5Equal( MaterialItr->first, p_Digest ) )
+			{
+				break;
+			}
+
+			++MaterialItr;
+		}
+
+		if( MaterialItr == m_Materials.end( ) )
+		{
+			return FPS_FAIL;
+		}
+
+		MD5_DIGEST ShaderDigest;
+
+		MaterialItr->second.GetShader( ShaderDigest );
+
+		std::map< MD5_DIGEST, Shader >::iterator ShaderItr =
+			m_Shaders.begin( );
+
+		while( ShaderItr != m_Shaders.end( ) )
+		{
+			if( MD5Equal( ShaderItr->first, ShaderDigest ) )
+			{
+				break;
+			}
+			++ShaderItr;
+		}
+
+		if( ShaderItr == m_Shaders.end( ) )
+		{
+			return FPS_FAIL;
+		}
+
+		ShaderItr->second.Apply( );
+
+		return FPS_OK;
     }
 
     FPS_UINT32 MaterialManager::SetShaderParameter( const MD5_DIGEST &p_Digest,
-	const std::string &p_name, void *p_pData )
+		const std::string &p_Name, void *p_pData )
     {
-		return FPS_FAIL;
+		std::map< MD5_DIGEST, Material >::const_iterator MaterialItr =
+			m_Materials.begin( );
+
+		MD5_DIGEST MaterialDigest;
+
+		while( MaterialItr != m_Materials.end( ) )
+		{
+			if( MD5Equal( MaterialItr->first, p_Digest ) )
+			{
+				break;
+			}
+
+			++MaterialItr;
+		}
+
+		if( MaterialItr == m_Materials.end( ) )
+		{
+			return FPS_FAIL;
+		}
+
+		MD5_DIGEST ShaderDigest;
+
+		MaterialItr->second.GetShader( ShaderDigest );
+
+		std::map< MD5_DIGEST, Shader >::iterator ShaderItr =
+			m_Shaders.begin( );
+
+		while( ShaderItr != m_Shaders.end( ) )
+		{
+			if( MD5Equal( ShaderItr->first, ShaderDigest ) )
+			{
+				break;
+			}
+			++ShaderItr;
+		}
+
+		if( ShaderItr == m_Shaders.end( ) )
+		{
+			return FPS_FAIL;
+		}
+
+		return ShaderItr->second.SetShaderParameter( p_Name, p_pData );
     }
 
     FPS_UINT32 MaterialManager::AddShader( const Shader &p_Shader )
