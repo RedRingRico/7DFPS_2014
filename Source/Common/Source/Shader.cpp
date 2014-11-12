@@ -164,9 +164,13 @@ namespace FPS
 			GLchar *pLog = FPS_NULL;
 
 			glGetShaderiv( ShaderID, GL_INFO_LOG_LENGTH, &LogLength );
+
 			std::cout << "[FPS::Shader::CreateShaderFromSource] <ERROR> " <<
 				ShaderTypeName << " Shader Log:" << std::endl;
-			std::cout << "\t" << pLog << std::endl;
+
+			pLog = new GLchar[ LogLength ];
+			glGetShaderInfoLog( ShaderID, LogLength, &LogLength, pLog );
+			std::cout << pLog << std::endl << std::endl;
 
 			SafeDeleteArray< GLchar >( pLog );
 
@@ -340,8 +344,11 @@ namespace FPS
 		while( MapItr != m_UniformLocationMap.end( ) )
 		{
 			p_Names.push_back( MapItr->first );
+			std::cout << "Name: " << MapItr->first << std::endl;
 			++MapItr;
 		}
+
+		std::cout << "Got names" << std::endl;
 
 		return FPS_OK;
 	}
@@ -367,9 +374,12 @@ namespace FPS
 		// semi-colon indicating the end of the line
 		std::string SourceCopy( p_pSource );
 
-		FPS_MEMSIZE UniformPosition = SourceCopy.find_first_of( "uniform" );
+		std::cout << "Extracting uniform names" << std::endl;
+		std::cout << "Source:" << std::endl << p_pSource << std::endl;
 
-		while( UniformPosition == std::string::npos )
+		FPS_MEMSIZE UniformPosition = SourceCopy.find( "uniform" );
+
+		while( UniformPosition != std::string::npos )
 		{
 			// Get the first set of non-whitespace characters before the semi-
 			// colon
@@ -378,6 +388,8 @@ namespace FPS
 
 			if( SemiColonPosition == std::string::npos )
 			{
+				std::cout << "[FPS::Shader::ExtractUniformNames] <ERROR> "
+					"Semi-colon was not found in string" << std::endl;
 				// This can't be correct
 				return FPS_FAIL;
 			}
@@ -391,6 +403,10 @@ namespace FPS
 
 			std::string Type = SourceCopy.substr( TypeStart,
 				TypeEnd - TypeStart );
+
+			std::cout << "uniform start: " << UniformPosition << std::endl;
+			std::cout << "Start: " << TypeStart << std::endl;
+			std::cout << "End: " << TypeEnd << std::endl;
 
 			SHADER_PARAMETER ShaderParameter =
 				{ SHADER_PARAMETER_TYPE_UNKNOWN, 1, 0 };
@@ -543,12 +559,15 @@ namespace FPS
 				std::cout << "[FPS::Shader::ExtractUniformNames] <WARN> "
 					"Duplicate value for " <<
 					SourceCopy.substr( UniformNameStart,
-						( UniformNameEnd - UniformNameStart ) + 1 ) <<
+						( UniformNameEnd - UniformNameStart ) ) <<
 					" found" << std::endl;
 			}
 
-			UniformPosition = SourceCopy.find_first_of( "uniform",
-				SemiColonPosition );
+			std::cout << "Type: " << Type << std::endl;
+			std::cout << "Name: " << SourceCopy.substr( UniformNameStart,
+						( UniformNameEnd - UniformNameStart ) ) << std::endl;
+
+			UniformPosition = SourceCopy.find( "uniform", SemiColonPosition );
 		}
 		
 		return FPS_OK;

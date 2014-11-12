@@ -12,23 +12,30 @@ namespace FPS
     }
 
     FPS_UINT32 MaterialManager::CreateMaterial( const std::string &p_FileName,
-		MD5_DIGEST &p_Digest )
+	MD5_DIGEST &p_Digest )
     {
-		MD5_DIGEST Digest;
-		MD5Zero( Digest );
-		Material NewMaterial( this );
+	MD5_DIGEST Digest;
+	MD5Zero( Digest );
+	Material NewMaterial( this );
 
-		if( NewMaterial.CreateFromFile( p_FileName ) != FPS_OK )
-		{
-			return FPS_FAIL;
-		}
+	if( NewMaterial.CreateFromFile( p_FileName ) != FPS_OK )
+	{
+	    std::cout << "[FPS::MaterialManager::CreateMaterial] "
+		"<ERROR> Failed to create material from file" << std::endl;
 
-		if( NewMaterial.GetDigest( Digest ) != FPS_OK )
-		{
-			return FPS_FAIL;
-		}
+	    return FPS_FAIL;
+	}
 
-		return FPS_OK;
+	if( NewMaterial.GetDigest( Digest ) != FPS_OK )
+	{
+	    std::cout << "[FPS::MaterialManager::CreateMaterial] "
+		"<ERROR> Failed to obtain the material's MD5 digest" <<
+		std::endl;
+
+	    return FPS_FAIL;
+	}
+
+	return FPS_OK;
     }
 
     FPS_UINT32 MaterialManager::ApplyMaterial( const MD5_DIGEST &p_Digest )
@@ -78,7 +85,7 @@ namespace FPS
     }
 
     FPS_UINT32 MaterialManager::SetShaderParameter( const MD5_DIGEST &p_Digest,
-		const std::string &p_Name, void *p_pData )
+	const std::string &p_Name, void *p_pData )
     {
 		std::map< MD5_DIGEST, Material >::const_iterator MaterialItr =
 			m_Materials.begin( );

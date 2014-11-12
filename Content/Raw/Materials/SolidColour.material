@@ -1,16 +1,8 @@
 {
-	"shader":
-	{
-		"source"
-		[
-			{
-				"type": "vertex",
-				"path": "Content/Cooked/Shaders/SolidColour.vsh"
-			}
-			{
-				"type": "fragment",
-				"path": "Content/Cooked/Shaders/SolidColour.fsh"
-			}
+	"shader": {
+		"source": [
+			{ "type": "vertex", "path": "Content/Cooked/Shaders/SolidColour.vsh" },
+			{ "type": "fragment", "path": "Content/Cooked/Shaders/SolidColour.fsh" }
 		]
 	}
 }

@@ -33,6 +33,8 @@ namespace FPS
 	{
 		if( p_FileName.size( ) == 0 )
 		{
+			std::cout << "[FPS::Material::CreateFromFile] <ERROR> "
+				"File path is of zero length" << std::endl;
 			return FPS_FAIL;
 		}
 
@@ -40,6 +42,10 @@ namespace FPS
 
 		if( pMaterialFile == FPS_NULL )
 		{
+			std::cout << "[FPS::Material::CreateFromFile] <ERROR> "
+				"Failed to open file '" << p_FileName << "' for reading" <<
+				std::endl;
+
 			return FPS_FAIL;
 		}
 
@@ -61,13 +67,33 @@ namespace FPS
 
 		if( MaterialFile.HasMember( "shader" ) )
 		{
+			std::cout << "[FPS::Material::CreateFromFile] <INFO> "
+				"Found material shader" << std::endl;
 			rapidjson::Value &ShaderRoot = MaterialFile[ "shader" ];
 
 			if( ShaderRoot.HasMember( "source" ) )
 			{
+				std::cout << "[FPS::Material::CreateFromFile] <INFO> "
+					"Found shader source in shader" << std::endl;
+
+				if( ShaderRoot[ "source" ].IsArray( ) == false )
+				{
+					std::cout << "[FPS::Material::CreateFromFile] <ERROR> "
+						"Failed to load shader source, it is not recognised "
+						"as being an array of values" << std::endl;
+					SafeDeleteArray< char >( pSource );
+
+					return FPS_FAIL;
+				}
+
 				rapidjson::Value &ShaderSourceRoot = ShaderRoot[ "source" ];
 
-				for( rapidjson::SizeType i = 0; i < ShaderRoot.Size( ); ++i )
+				std::cout << "[FPS::Material::CreateFromFile] <INFO> "
+					"Processing " << ShaderSourceRoot.Size( ) << " shaders" <<
+					std::endl;
+
+				for( rapidjson::SizeType i = 0; i < ShaderSourceRoot.Size( );
+					++i )
 				{
 					SHADER_TYPE Type = SHADER_TYPE_UNKNOWN;
 					std::string ShaderSource;
@@ -78,21 +104,25 @@ namespace FPS
 						std::string TypeString =
 							ShaderSourceRoot[ i ][ "type" ].GetString( );
 
-						if( TypeString.compare( "vertex" ) )
+						if( TypeString.compare( "vertex" ) == 0 )
 						{
 							Type = SHADER_TYPE_VERTEX;
 						}
-						else if( TypeString.compare( "fragment" ) )
+						else if( TypeString.compare( "fragment" ) == 0 )
 						{
 							Type = SHADER_TYPE_FRAGMENT;
 						}
-						else if( TypeString.compare( "geometry" ) )
+						else if( TypeString.compare( "geometry" ) == 0 )
 						{
 							Type = SHADER_TYPE_GEOMETRY;
 						}
 						else
 						{
 							SafeDeleteArray< char >( pSource );
+							std::cout << "[FPS::Material::CreateFromFile] "
+								"<ERROR> Unrecognised shader type '" <<
+								TypeString << "'" << std::endl;
+
 							return FPS_FAIL;
 						}
 					}
@@ -117,8 +147,13 @@ namespace FPS
 					else
 					{
 						SafeDeleteArray< char >( pSource );
+						std::cout << "[FPS::Material::CreateFromFile] <ERROR> "
+							"Failed to get either the path to a shader file "
+							"or the source code directly (neither code nor "
+							"path were found)" << std::endl;
 						return FPS_FAIL;
 					}
+
 
 					MaterialShader.CreateShaderFromSource( ShaderSource, Type,
 						FromFile );
@@ -133,6 +168,8 @@ namespace FPS
 		else
 		{
 			SafeDeleteArray< char >( pSource );
+			std::cout << "[FPS::Material::CreateFromFile] <ERROR> "
+				"Could not find shader in JSON" << std::endl;
 			return FPS_FAIL;
 		}
 

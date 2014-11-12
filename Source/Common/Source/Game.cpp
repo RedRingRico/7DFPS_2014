@@ -2,6 +2,9 @@
 #include <iostream>
 #include <GL/glew.h>
 #include <GL/gl.h>
+#include <MaterialManager.hpp>
+#include <PolygonCache.hpp>
+#include <MD5.hpp>
 
 namespace FPS
 {
@@ -11,6 +14,9 @@ namespace FPS
 
 	Game::~Game( )
 	{
+		SDL_GL_DeleteContext( m_GLContext );
+		SDL_DestroyWindow( m_pWindow );
+		SDL_Quit( );
 	}
 
 	FPS_UINT32 Game::Initialise( )
@@ -68,7 +74,7 @@ namespace FPS
 			return FPS_FAIL;
 		}
 
-		m_Renderer.SetClearColour( 0.0f, 1.0f, 0.0f );
+		m_Renderer.SetClearColour( 118.0f / 255.0f, 185.0f / 255.0f, 0.0f );
 
 		return FPS_OK;
 	}
@@ -77,6 +83,26 @@ namespace FPS
 	{
 		FPS_BOOL Run = FPS_TRUE;
 		SDL_Event Event;
+
+		MaterialManager MatMan;
+		MD5_DIGEST Digest;
+
+		std::string MaterialFile =
+			"Content/Raw/Materials/SolidColour.material";
+		
+		if( MatMan.CreateMaterial(
+			"Content/Raw/Materials/SolidColour.material", Digest ) != FPS_OK )
+		{
+			return FPS_FAIL;
+		}
+
+		FPS_FLOAT32 Vertices[ ] =
+		// Position | Colour
+		{
+			-10.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f,
+			10.0f, 10.0f, 0.0f, 1.0f, 1.0f, 1.0f,
+			10.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f
+		};
 
 		while( Run )
 		{
@@ -98,10 +124,6 @@ namespace FPS
 			m_Renderer.Clear( FPS_TRUE, FPS_TRUE, FPS_TRUE );
 			m_Renderer.SwapBuffers( );
 		}
-
-		SDL_GL_DeleteContext( m_GLContext );
-		SDL_DestroyWindow( m_pWindow );
-		SDL_Quit( );
 
 		return FPS_OK;
 	}
