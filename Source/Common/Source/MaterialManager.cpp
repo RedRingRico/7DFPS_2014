@@ -74,9 +74,7 @@ namespace FPS
 			return FPS_FAIL;
 		}
 
-		ShaderItr->second.Apply( );
-
-		return FPS_OK;
+		return ShaderItr->second.Apply( );
     }
 
     FPS_UINT32 MaterialManager::SetShaderParameter( const MD5_DIGEST &p_Digest,
