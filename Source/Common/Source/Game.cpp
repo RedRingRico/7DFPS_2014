@@ -56,6 +56,7 @@ namespace FPS
 
 		m_GLContext = SDL_GL_CreateContext( m_pWindow );
 
+		glewExperimental = GL_TRUE;
 		GLenum GLEWError = glewInit( );
 
 		if( GLEWError != GLEW_OK )
