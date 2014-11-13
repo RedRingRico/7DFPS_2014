@@ -20,6 +20,7 @@ namespace FPS
 
 	Material::~Material( )
 	{
+		std::cout << "Deleting material" << std::endl;
 	}
 
 	FPS_UINT32 Material::GetDigest( MD5_DIGEST &p_Digest ) const
@@ -63,7 +64,8 @@ namespace FPS
 		rapidjson::Document MaterialFile;
 		MaterialFile.Parse( pSource );
 
-		Shader MaterialShader;
+		MATERIAL_SHADER MaterialShader;
+		MaterialShader.Types = SHADER_TYPE_NONE;
 
 		if( MaterialFile.HasMember( "shader" ) )
 		{
@@ -151,17 +153,44 @@ namespace FPS
 							"Failed to get either the path to a shader file "
 							"or the source code directly (neither code nor "
 							"path were found)" << std::endl;
+
 						return FPS_FAIL;
 					}
 
-
-					MaterialShader.CreateShaderFromSource( ShaderSource, Type,
-						FromFile );
+					switch( Type )
+					{
+						case SHADER_TYPE_VERTEX:
+						{
+							MaterialShader.VertexSource = ShaderSource;
+							MaterialShader.Types |= SHADER_TYPE_VERTEX;
+							MaterialShader.VertexFile = FromFile;
+							break;
+						}
+						case SHADER_TYPE_FRAGMENT:
+						{
+							MaterialShader.FragmentSource = ShaderSource;
+							MaterialShader.Types |= SHADER_TYPE_FRAGMENT;
+							MaterialShader.FragmentFile = FromFile;
+							break;
+						}
+						case SHADER_TYPE_GEOMETRY:
+						{
+							MaterialShader.GeometrySource = ShaderSource;
+							MaterialShader.Types |= SHADER_TYPE_GEOMETRY;
+							MaterialShader.GeometryFile = FromFile;
+							break;
+						}
+						default:
+						{
+							SafeDeleteArray< char >( pSource );
+							return FPS_FAIL;
+						}
+					}
 				}
 			}
 			else
 			{
-			SafeDeleteArray< char >( pSource );
+				SafeDeleteArray< char >( pSource );
 				return FPS_FAIL;
 			}
 		}
@@ -186,24 +215,14 @@ namespace FPS
 
 		MaterialMD5.MD5Final( m_MD5Digest.Digest, &MaterialMD5Context );
 
-		MaterialShader.GetShaderParameters( m_ShaderParameters );
-		MaterialShader.Link( );
-		MaterialShader.GetDigest( m_ShaderMD5Digest );
-
-		std::cout << "Created a material: " << MD5AsString( m_MD5Digest ) << std::endl;
-
-		if( m_pMaterialManager->AddShader( MaterialShader ) == FPS_FAIL )
-		{
-			std::cout << "[FPS::Material::CreateFromFile] <INFO> Shader "
-				"already in material manager" << std::endl;
-		}
+		m_pMaterialManager->CreateShader( MaterialShader, m_MD5Digest,
+			m_ShaderMD5Digest );
 
 		return FPS_OK;
 	}
 
 	FPS_UINT32 Material::GetShader( MD5_DIGEST &p_Digest ) const
 	{
-		std::cout << "Shader: " << MD5AsString( m_ShaderMD5Digest ) << std::endl;
 		memcpy( &p_Digest, &m_ShaderMD5Digest, sizeof( m_ShaderMD5Digest ) );
 
 		return FPS_OK;

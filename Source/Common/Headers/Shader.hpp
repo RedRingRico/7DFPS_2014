@@ -14,6 +14,7 @@ namespace FPS
 {
 	typedef enum _tagSHADER_TYPE
 	{
+		SHADER_TYPE_NONE		= 0,
 		SHADER_TYPE_VERTEX		= 1,
 		SHADER_TYPE_FRAGMENT	= 2,
 		SHADER_TYPE_GEOMETRY	= 3,
@@ -91,6 +92,8 @@ namespace FPS
 		MD5_DIGEST									m_MD5Digest;
 		std::map< std::string, SHADER_PARAMETER >	m_UniformLocationMap;
 	};
+
+	SHADER_TYPE &operator|=( SHADER_TYPE &p_Left, SHADER_TYPE p_Right );
 }
 
 #endif // __FPS_SHADER_HPP__

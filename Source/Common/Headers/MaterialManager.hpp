@@ -1,8 +1,8 @@
 #ifndef __FPS_MATERIALMANAGER_HPP__
 #define __FPS_MATERIALMANAGER_HPP__
 
-#include <Material.hpp>
 #include <Shader.hpp>
+#include <Material.hpp>
 #include <Texture.hpp>
 #include <MD5.hpp>
 #include <string>
@@ -10,6 +10,17 @@
 
 namespace FPS
 {
+	typedef struct _tagMATERIAL_SHADER
+	{
+		std::string VertexSource;
+		std::string FragmentSource;
+		std::string GeometrySource;
+		SHADER_TYPE	Types;
+		FPS_BOOL	VertexFile;
+		FPS_BOOL	FragmentFile;
+		FPS_BOOL	GeometryFile;
+	}MATERIAL_SHADER,*PMATERIAL_SHADER;
+
     class MaterialManager
     {
     public:
@@ -24,11 +35,12 @@ namespace FPS
 		FPS_UINT32 SetShaderParameter( const MD5_DIGEST &p_Digest,
 			const std::string &p_Name, void *p_pData );
 
-		FPS_UINT32 AddShader( const Shader &p_Shader );
+		FPS_UINT32 CreateShader( const MATERIAL_SHADER &p_ShaderInfo,
+			const MD5_DIGEST &p_MaterialDigest, MD5_DIGEST &p_ShaderDigest );
 
     private:
-		std::map< MD5_DIGEST, Material >	m_Materials;
-		std::map< MD5_DIGEST, Shader >		m_Shaders;
+		std::map< MD5_DIGEST, Material * >	m_Materials;
+		std::map< MD5_DIGEST, Shader * >	m_Shaders;
 		std::map< MD5_DIGEST, Texture >		m_Textures;
     };
 }

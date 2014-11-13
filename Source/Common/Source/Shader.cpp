@@ -21,7 +21,7 @@ namespace FPS
 
 	Shader::~Shader( )
 	{
-		std::cout << "Deleting shader" << std::endl;/*
+		std::cout << "Deleting shader" << std::endl;
 		if( m_ProgramID )
 		{
 			glDeleteProgram( m_ProgramID );
@@ -40,7 +40,7 @@ namespace FPS
 		if( m_GeometryID )
 		{
 			glDeleteShader( m_GeometryID );
-		}*/
+		}
 	}
 
 	FPS_UINT32 Shader::CreateShaderFromSource( const std::string &p_Source,
@@ -345,11 +345,8 @@ namespace FPS
 		while( MapItr != m_UniformLocationMap.end( ) )
 		{
 			p_Names.push_back( MapItr->first );
-			std::cout << "Name: " << MapItr->first << std::endl;
 			++MapItr;
 		}
-
-		std::cout << "Got names" << std::endl;
 
 		return FPS_OK;
 	}
@@ -359,8 +356,6 @@ namespace FPS
 		if( m_Linked )
 		{
 			memcpy( &p_Digest, &m_MD5Digest, sizeof( m_MD5Digest ) );
-
-			std::cout << "Shader MD5: " << MD5AsString( m_MD5Digest ) << std::endl;
 
 			return FPS_OK;
 		}
@@ -727,6 +722,14 @@ namespace FPS
 		}
 
 		return FPS_OK;
+	}
+
+	SHADER_TYPE &operator|=( SHADER_TYPE &p_Left, SHADER_TYPE p_Right )
+	{
+		p_Left = static_cast< SHADER_TYPE >( static_cast< int >( p_Left ) |
+			static_cast< int >( p_Right ) );
+
+		return p_Left;
 	}
 }
 
