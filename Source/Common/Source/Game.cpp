@@ -125,7 +125,7 @@ namespace FPS
 		Matrix4x4 View, Projection, World;
 
 		Projection.CreatePerspectiveFOV( 45.0f, 800.0f / 600.0f, 1.0f,
-			10000.0f );
+			100000.0f );
 
 		Vector4 EyePosition, LookPoint, WorldUp;
 
