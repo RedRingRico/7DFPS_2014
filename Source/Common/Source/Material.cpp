@@ -215,7 +215,7 @@ namespace FPS
 
 		MaterialMD5.MD5Final( m_MD5Digest.Digest, &MaterialMD5Context );
 
-		m_pMaterialManager->CreateShader( MaterialShader, m_MD5Digest,
+		m_pMaterialManager->CreateShader( MaterialShader, m_ShaderParameters,
 			m_ShaderMD5Digest );
 
 		return FPS_OK;

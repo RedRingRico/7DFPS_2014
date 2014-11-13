@@ -339,8 +339,7 @@ namespace FPS
 	{
 		p_Names.clear( );
 
-		std::map< std::string, SHADER_PARAMETER >::const_iterator MapItr =
-			m_UniformLocationMap.begin( );
+		auto MapItr = m_UniformLocationMap.begin( );
 
 		while( MapItr != m_UniformLocationMap.end( ) )
 		{

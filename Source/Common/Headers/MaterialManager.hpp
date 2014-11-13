@@ -36,7 +36,8 @@ namespace FPS
 			const std::string &p_Name, void *p_pData );
 
 		FPS_UINT32 CreateShader( const MATERIAL_SHADER &p_ShaderInfo,
-			const MD5_DIGEST &p_MaterialDigest, MD5_DIGEST &p_ShaderDigest );
+			std::list< std::string > &p_ShaderParameters,
+			MD5_DIGEST &p_ShaderDigest );
 
     private:
 		std::map< MD5_DIGEST, Material * >	m_Materials;

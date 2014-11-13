@@ -169,7 +169,8 @@ namespace FPS
 
     FPS_UINT32 MaterialManager::CreateShader(
 		const MATERIAL_SHADER &p_ShaderInfo,
-		const MD5_DIGEST &p_MaterialDigest, MD5_DIGEST &p_ShaderDigest )
+		std::list< std::string > &p_ShaderParameters,
+		MD5_DIGEST &p_ShaderDigest )
     {
 		Shader *pMaterialShader = new Shader( );
 
@@ -193,6 +194,7 @@ namespace FPS
 				p_ShaderInfo.GeometryFile );
 		}
 
+		pMaterialShader->GetShaderParameters( p_ShaderParameters );
 		pMaterialShader->Link( );
 		pMaterialShader->GetDigest( p_ShaderDigest );
 
