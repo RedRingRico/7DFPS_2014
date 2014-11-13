@@ -1,6 +1,7 @@
 #include <Matrix4x4.hpp>
 #include <Vector4.hpp>
 #include <Maths.hpp>
+#include <iostream>
 #include <cstring>
 #include <cmath>
 
@@ -67,11 +68,11 @@ namespace FPS
 
 		m_M[ 4 ] = 0.0f;
 		m_M[ 5 ] = Cos;
-		m_M[ 6 ] = -Sin;
+		m_M[ 6 ] = Sin;
 		m_M[ 7 ] = 0.0f;
 
 		m_M[ 8 ] = 0.0f;
-		m_M[ 9 ] = Sin;
+		m_M[ 9 ] = -Sin;
 		m_M[ 10 ] = Cos;
 		m_M[ 11 ] = 0.0f;
 
@@ -90,7 +91,7 @@ namespace FPS
 
 		m_M[ 0 ] = Cos;
 		m_M[ 1 ] = 0.0f;
-		m_M[ 2 ] = Sin;
+		m_M[ 2 ] = -Sin;
 		m_M[ 3 ] = 0.0f;
 
 		m_M[ 4 ] = 0.0f;
@@ -98,7 +99,7 @@ namespace FPS
 		m_M[ 6 ] = 0.0f;
 		m_M[ 7 ] = 0.0f;
 
-		m_M[ 8 ] = -Sin;
+		m_M[ 8 ] = Sin;
 		m_M[ 9 ] = 0.0f;
 		m_M[ 10 ] = Cos;
 		m_M[ 11 ] = 0.0f;
@@ -117,11 +118,11 @@ namespace FPS
 		FPS::SineCosine( p_Angle, Sin, Cos );
 
 		m_M[ 0 ] = Cos;
-		m_M[ 1 ] = -Sin;
+		m_M[ 1 ] = Sin;
 		m_M[ 2 ] = 0.0f;
 		m_M[ 3 ] = 0.0f;
 
-		m_M[ 4 ] = Sin;
+		m_M[ 4 ] = -Sin;
 		m_M[ 5 ] = Cos;
 		m_M[ 6 ] = 0.0f;
 		m_M[ 7 ] = 0.0f;
@@ -281,11 +282,11 @@ namespace FPS
 		Matrix4x4 Upper3x3;
 
 		Vector4 Zero( 0.0f, 0.0f, 0.0f, 1.0f );
-		Upper3x3.SetColumns( Right, Up, -Direction, Zero );
+		Upper3x3.SetColumns( Right, Up, Direction, Zero );
 
-		Vector4 Position = -( Upper3x3 * p_Position );
+		Vector4 Position = ( Upper3x3 * p_Position );
 
-		this->CreateView3D( Right, Up, -Direction, Position );
+		this->CreateView3D( Right, Up, Direction, Position );
 
 		return *this;
 	}
@@ -320,6 +321,81 @@ namespace FPS
 		m_M[ 15 ] = 1.0f;
 
 		return *this;
+	}
+
+	Matrix4x4 Matrix4x4::operator*( const Matrix4x4 &p_Right ) const
+	{
+		Matrix4x4 Multiply;
+
+		Multiply.m_M[ 0 ] = ( m_M[ 0 ] * p_Right.m_M[ 0 ] ) +
+							( m_M[ 4 ] * p_Right.m_M[ 1 ] ) +
+							( m_M[ 8 ] * p_Right.m_M[ 2 ] ) +
+							( m_M[ 12 ] * p_Right.m_M[ 3 ] );
+		Multiply.m_M[ 1 ] =	( m_M[ 1 ] * p_Right.m_M[ 0 ] ) +
+							( m_M[ 5 ] * p_Right.m_M[ 1 ] ) +
+							( m_M[ 9 ] * p_Right.m_M[ 2 ] ) +
+							( m_M[ 13 ] * p_Right.m_M[ 3 ] );
+		Multiply.m_M[ 2 ] =	( m_M[ 2 ] * p_Right.m_M[ 0 ] ) +
+							( m_M[ 6 ] * p_Right.m_M[ 1 ] ) +
+							( m_M[ 10 ] * p_Right.m_M[ 2 ] ) +
+							( m_M[ 14 ] * p_Right.m_M[ 3 ] );
+		Multiply.m_M[ 3 ] =	( m_M[ 3 ] * p_Right.m_M[ 0 ] ) +
+							( m_M[ 7 ] * p_Right.m_M[ 1 ] ) +
+							( m_M[ 11 ] * p_Right.m_M[ 2 ] ) +
+							( m_M[ 15 ] * p_Right.m_M[ 3 ] );
+
+		Multiply.m_M[ 4 ] = ( m_M[ 0 ] * p_Right.m_M[ 4 ] ) +
+							( m_M[ 4 ] * p_Right.m_M[ 5 ] ) +
+							( m_M[ 8 ] * p_Right.m_M[ 6 ] ) +
+							( m_M[ 12 ] * p_Right.m_M[ 7 ] );
+		Multiply.m_M[ 5 ] =	( m_M[ 1 ] * p_Right.m_M[ 4 ] ) +
+							( m_M[ 5 ] * p_Right.m_M[ 5 ] ) +
+							( m_M[ 9 ] * p_Right.m_M[ 6 ] ) +
+							( m_M[ 13 ] * p_Right.m_M[ 7 ] );
+		Multiply.m_M[ 6 ] =	( m_M[ 2 ] * p_Right.m_M[ 4 ] ) +
+							( m_M[ 6 ] * p_Right.m_M[ 5 ] ) +
+							( m_M[ 10 ] * p_Right.m_M[ 6 ] ) +
+							( m_M[ 14 ] * p_Right.m_M[ 7 ] );
+		Multiply.m_M[ 7 ] =	( m_M[ 3 ] * p_Right.m_M[ 4 ] ) +
+							( m_M[ 7 ] * p_Right.m_M[ 5 ] ) +
+							( m_M[ 11 ] * p_Right.m_M[ 6 ] ) +
+							( m_M[ 15 ] * p_Right.m_M[ 7 ] );
+
+		Multiply.m_M[ 8 ] = ( m_M[ 0 ] * p_Right.m_M[ 8 ] ) +
+							( m_M[ 4 ] * p_Right.m_M[ 9 ] ) +
+							( m_M[ 8 ] * p_Right.m_M[ 10 ] ) +
+							( m_M[ 12 ] * p_Right.m_M[ 11 ] );
+		Multiply.m_M[ 9 ] =	( m_M[ 1 ] * p_Right.m_M[ 8 ] ) +
+							( m_M[ 5 ] * p_Right.m_M[ 9 ] ) +
+							( m_M[ 9 ] * p_Right.m_M[ 10 ] ) +
+							( m_M[ 13 ] * p_Right.m_M[ 11 ] );
+		Multiply.m_M[ 10 ] =	( m_M[ 2 ] * p_Right.m_M[ 8 ] ) +
+							( m_M[ 6 ] * p_Right.m_M[ 9 ] ) +
+							( m_M[ 10 ] * p_Right.m_M[ 10 ] ) +
+							( m_M[ 14 ] * p_Right.m_M[ 11 ] );
+		Multiply.m_M[ 11 ] =	( m_M[ 3 ] * p_Right.m_M[ 8 ] ) +
+							( m_M[ 7 ] * p_Right.m_M[ 9 ] ) +
+							( m_M[ 11 ] * p_Right.m_M[ 10 ] ) +
+							( m_M[ 15 ] * p_Right.m_M[ 11 ] );
+
+		Multiply.m_M[ 12 ] = ( m_M[ 0 ] * p_Right.m_M[ 12 ] ) +
+							( m_M[ 4 ] * p_Right.m_M[ 13 ] ) +
+							( m_M[ 8 ] * p_Right.m_M[ 14 ] ) +
+							( m_M[ 12 ] * p_Right.m_M[ 15 ] );
+		Multiply.m_M[ 13 ] =	( m_M[ 1 ] * p_Right.m_M[ 12 ] ) +
+							( m_M[ 5 ] * p_Right.m_M[ 13 ] ) +
+							( m_M[ 9 ] * p_Right.m_M[ 14 ] ) +
+							( m_M[ 13 ] * p_Right.m_M[ 15 ] );
+		Multiply.m_M[ 14 ] =	( m_M[ 2 ] * p_Right.m_M[ 12 ] ) +
+							( m_M[ 6 ] * p_Right.m_M[ 13 ] ) +
+							( m_M[ 10 ] * p_Right.m_M[ 14 ] ) +
+							( m_M[ 14 ] * p_Right.m_M[ 15 ] );
+		Multiply.m_M[ 15 ] =	( m_M[ 3 ] * p_Right.m_M[ 12 ] ) +
+							( m_M[ 7 ] * p_Right.m_M[ 13 ] ) +
+							( m_M[ 11 ] * p_Right.m_M[ 14 ] ) +
+							( m_M[ 15 ] * p_Right.m_M[ 15 ] );
+
+		return Multiply;
 	}
 
 	Vector4 Matrix4x4::operator*( const Vector4 &p_Vector ) const
@@ -363,6 +439,20 @@ namespace FPS
 	void Matrix4x4::GetAsFloatArray( FPS_FLOAT32 p_Raw[ 16 ] ) const
 	{
 		memcpy( p_Raw, m_M, sizeof( m_M ) );
+	}
+
+
+	void Matrix4x4::Print( const std::string &p_Name ) const
+	{
+		std::cout << p_Name << std::endl;
+
+		for( FPS_MEMSIZE i = 0; i < 4; ++i )
+		{
+			std::cout << "| " << m_M[ i ] << " " << m_M[ i + 4 ] << " " <<
+				m_M[ i + 8 ] << " " << m_M[ i + 12 ] << " |" << std::endl;
+		}
+
+		std::cout << std::endl;
 	}
 
 	Vector4 operator*( const Vector4 &p_Vector, const Matrix4x4 &p_Matrix )

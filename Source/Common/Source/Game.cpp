@@ -5,6 +5,9 @@
 #include <MaterialManager.hpp>
 #include <PolygonCache.hpp>
 #include <MD5.hpp>
+#include <Matrix4x4.hpp>
+#include <Vector4.hpp>
+#include <Maths.hpp>
 
 namespace FPS
 {
@@ -51,6 +54,7 @@ namespace FPS
 		{
 			std::cout << "[7DFPS::Game::Initialise] <ERROR> Could not create "
 				"an SDL window" << std::endl;
+
 			return FPS_FAIL;
 		}
 
@@ -104,9 +108,9 @@ namespace FPS
 		FPS_FLOAT32 Vertices[ ] =
 		// Position | Colour
 		{
-			-0.5f, -0.5f, 1.0f, 1.0f, 0.0f, 0.0f,
-			0.0f, 0.5f, 1.0f, 1.0f, 0.0f, 1.0f,
-			0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 0.0f
+			-1.0f, -1.0f, 0.0f, 1.0f, 0.0f, 0.0f,
+			0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 1.0f,
+			1.0f, -1.0f, 0.0f, 1.0f, 1.0f, 0.0f
 		};
 
 		FPS_UINT16 Indices[ ] =
@@ -117,6 +121,21 @@ namespace FPS
 		PolyCache.AddPolygons( 3, 3,
 			reinterpret_cast< const FPS_BYTE * >( Vertices ), Indices,
 			1, GL_TRIANGLES );
+
+		Matrix4x4 View, Projection, World;
+
+		Projection.CreatePerspectiveFOV( 45.0f, 800.0f / 600.0f, 1.0f,
+			10000.0f );
+
+		Vector4 EyePosition, LookPoint, WorldUp;
+
+		WorldUp.Set( 0.0f, 1.0f, 0.0f, 1.0f );
+		// Look down the Z axis
+		LookPoint.Set( 0.0f, 0.0f, -1.0f, 1.0f );
+
+		EyePosition.Set( 0.0f, 0.0f, 10.0f, 1.0f );
+
+		FPS_FLOAT32 Rotate = 0.0f;
 
 		while( Run )
 		{
@@ -135,7 +154,23 @@ namespace FPS
 				Run = FPS_FALSE;
 			}
 
+			FPS_FLOAT32 ViewRaw[ 16 ], ProjectionRaw[ 16 ], WorldRaw[ 16 ];
+
+			// Recreate the view matrix
+			View.CreateViewLookAt( EyePosition, LookPoint, WorldUp );
+
+			Rotate += 0.01f;
+			World.RotateZ( Rotate );
+
+			View.GetAsFloatArray( ViewRaw );
+			Projection.GetAsFloatArray( ProjectionRaw );
+			World.GetAsFloatArray( WorldRaw );
+
 			m_Renderer.Clear( FPS_TRUE, FPS_TRUE, FPS_TRUE );
+			MatMan.SetShaderParameter( Digest, "u_ViewMatrix", ViewRaw );
+			MatMan.SetShaderParameter( Digest, "u_ProjectionMatrix",
+				ProjectionRaw );
+			MatMan.SetShaderParameter( Digest, "u_WorldMatrix", WorldRaw );
 			MatMan.ApplyMaterial( Digest );
 			PolyCache.FlushAllLines( );
 			m_Renderer.SwapBuffers( );

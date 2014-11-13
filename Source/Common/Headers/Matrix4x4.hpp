@@ -2,6 +2,7 @@
 #define __FPS_MATRIX4X4_HPP__
 
 #include <DataTypes.hpp>
+#include <string>
 
 namespace FPS
 {
@@ -80,6 +81,8 @@ namespace FPS
 		FPS_FLOAT32 operator[ ]( const FPS_MEMSIZE p_Index ) const;
 
 		void GetAsFloatArray( FPS_FLOAT32 p_Raw [16 ] ) const;
+
+		void Print( const std::string &p_Name ) const;
 
 	private:
 		// The matrix is stored as follows:

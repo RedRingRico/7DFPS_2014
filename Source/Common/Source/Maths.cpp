@@ -32,7 +32,7 @@ namespace FPS
 		FPS_FLOAT32 &p_Cosine )
 	{
 		p_Sine = sinf( p_Angle );
-		p_Cosine = sinf( p_Angle );
+		p_Cosine = cosf( p_Angle );
 	}
 }
 

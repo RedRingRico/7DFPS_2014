@@ -2,6 +2,7 @@
 #define __FPS_VECTOR4_HPP__
 
 #include <DataTypes.hpp>
+#include <string>
 
 namespace FPS
 {
@@ -55,6 +56,8 @@ namespace FPS
 		Vector4 &operator-=( const Vector4 &p_Right );
 		Vector4 &operator*=( const Vector4 &p_Right );
 		Vector4 &operator*=( const FPS_FLOAT32 p_Scalar );
+
+		void Print( const std::string &p_Name ) const;
 		
 	private:
 		FPS_FLOAT32 m_X, m_Y, m_Z, m_W;

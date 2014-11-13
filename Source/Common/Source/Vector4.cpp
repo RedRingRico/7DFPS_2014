@@ -1,6 +1,7 @@
 #include <Vector4.hpp>
-#include <cmath>
 #include <Maths.hpp>
+#include <iostream>
+#include <cmath>
 
 namespace FPS
 {
@@ -273,6 +274,14 @@ namespace FPS
 		m_W *= p_Scalar;
 
 		return *this;
+	}
+
+	void Vector4::Print( const std::string &p_Name ) const
+	{
+		std::cout << p_Name << std::endl;
+
+		std::cout << "< " << m_X << ", " << m_Y << ", " << m_Z << ", " <<
+			m_W << " >" << std::endl;
 	}
 }
 

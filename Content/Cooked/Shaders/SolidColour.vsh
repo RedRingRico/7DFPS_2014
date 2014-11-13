@@ -12,7 +12,6 @@ out vec3 f_Colour;
 void main( )
 {
 	f_Colour = v_Colour;
-	//gl_Position = u_ProjectionMatrix * u_ViewMatrix * u_WorldMatrix * vec4( v_Position, 1.0 );
-	gl_Position = vec4( v_Position, 1.0 );
+	gl_Position = u_ProjectionMatrix * u_ViewMatrix * u_WorldMatrix * vec4( v_Position, 1.0 );
 }
 
