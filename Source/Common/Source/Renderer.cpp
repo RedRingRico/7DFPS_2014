@@ -1,14 +1,21 @@
 #include <Renderer.hpp>
-#include <GL/gl.h>
+#include <PolygonCache.hpp>
+#include <Memory.hpp>
+#include <iostream>
 
 namespace FPS
 {
-	Renderer::Renderer( )
+	Renderer::Renderer( ) :
+		m_pWindow( FPS_NULL ),
+		m_GLContext( FPS_NULL ),
+		m_pPolygonCache( FPS_NULL )
 	{
 	}
 
 	Renderer::~Renderer( )
 	{
+		SDL_GL_DeleteContext( m_GLContext );
+		SafeDelete< PolygonCache >( m_pPolygonCache );
 	}
 
 	FPS_UINT32 Renderer::Initialise( SDL_Window *p_pWindow )
@@ -20,7 +27,40 @@ namespace FPS
 
 		m_pWindow = p_pWindow;
 
+		m_GLContext = SDL_GL_CreateContext( m_pWindow );
+
+		glewExperimental = GL_TRUE;
+		GLenum GLEWError = glewInit( );
+
+		if( GLEWError != GLEW_OK )
+		{
+			std::cout << "[7DFPS::Game::Initialise] <ERROR> Failed to "
+				"initialise GLEW" << std::endl;
+
+			return FPS_FAIL;
+		}
+
+		std::cout << "[7DFPS::Game::Initialise] <INFO> GLEW Version: " <<
+			glewGetString( GLEW_VERSION ) << std::endl;
+
+		m_pPolygonCache = new PolygonCache( );
+
 		return FPS_OK;
+	}
+
+	FPS_UINT32 Renderer::RegisterPolygons( const FPS_MEMSIZE p_VertexCount,
+		const FPS_MEMSIZE p_IndexCount, const FPS_BYTE *p_pVertices,
+		const FPS_UINT16 *p_pIndices, const GLenum p_PrimitiveType,
+		const FPS_UINT64 p_VertexAttributes, FPS_UINT32 &p_CacheID )
+	{
+		return m_pPolygonCache->AddPolygons( p_VertexCount, p_IndexCount,
+			p_pVertices, p_pIndices, p_PrimitiveType, p_VertexAttributes,
+			p_CacheID );
+	}
+
+	FPS_UINT32 Renderer::RenderPolygons( const FPS_UINT32 p_CacheID )
+	{
+		return m_pPolygonCache->Render( p_CacheID );
 	}
 
 	void Renderer::SetClearColour( const FPS_FLOAT32 p_Red,

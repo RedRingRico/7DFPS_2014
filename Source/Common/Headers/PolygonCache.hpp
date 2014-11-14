@@ -29,7 +29,7 @@ namespace FPS
 
 		FPS_UINT32 AddPolygons( const FPS_MEMSIZE p_VertexCount,
 			const FPS_MEMSIZE p_IndexCount, const FPS_BYTE *p_pVertices,
-			const FPS_UINT16 *p_pIndices, GLenum p_PrimitiveType,
+			const FPS_UINT16 *p_pIndices, const GLenum p_PrimitiveType,
 			const FPS_UINT64 p_VertexAttributes, FPS_UINT32 &p_CacheID );
 		
 		FPS_UINT32 Render( const FPS_UINT32 p_CacheID );

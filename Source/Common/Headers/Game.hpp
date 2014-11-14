@@ -23,7 +23,6 @@ namespace FPS
 		Renderer	m_Renderer;
 
 		SDL_Window		*m_pWindow;
-		SDL_GLContext	m_GLContext;
 	};
 }
 

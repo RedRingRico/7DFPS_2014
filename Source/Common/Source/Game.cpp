@@ -17,7 +17,6 @@ namespace FPS
 
 	Game::~Game( )
 	{
-		SDL_GL_DeleteContext( m_GLContext );
 		SDL_DestroyWindow( m_pWindow );
 		SDL_Quit( );
 	}
@@ -58,22 +57,6 @@ namespace FPS
 			return FPS_FAIL;
 		}
 
-		m_GLContext = SDL_GL_CreateContext( m_pWindow );
-
-		glewExperimental = GL_TRUE;
-		GLenum GLEWError = glewInit( );
-
-		if( GLEWError != GLEW_OK )
-		{
-			std::cout << "[7DFPS::Game::Initialise] <ERROR> Failed to "
-				"initialise GLEW" << std::endl;
-
-			return FPS_FAIL;
-		}
-
-		std::cout << "[7DFPS::Game::Initialise] <INFO> GLEW Version: " <<
-			glewGetString( GLEW_VERSION ) << std::endl;
-
 		if( m_Renderer.Initialise( m_pWindow ) != FPS_OK )
 		{
 			return FPS_FAIL;
@@ -101,10 +84,6 @@ namespace FPS
 			return FPS_FAIL;
 		}
 
-		PolygonCache PolyCache;
-
-		//PolyCache.Create( 1000, 1000, 5, 0x66 );
-
 		FPS_FLOAT32 Vertices[ ] =
 		// Position | Colour
 		{
@@ -120,7 +99,7 @@ namespace FPS
 
 		FPS_UINT32 PolygonID;
 
-		PolyCache.AddPolygons( 3, 3,
+		m_Renderer.RegisterPolygons( 3, 3,
 			reinterpret_cast< const FPS_BYTE * >( Vertices ), Indices,
 			GL_TRIANGLES, 0x66, PolygonID );
 
@@ -188,7 +167,7 @@ namespace FPS
 						ProjectionRaw );
 					MatMan.SetShaderParameter( Digest, "u_WorldMatrix", WorldRaw );
 					MatMan.ApplyMaterial( Digest );
-					PolyCache.Render( PolygonID );
+					m_Renderer.RenderPolygons( PolygonID );
 					XPosition += 2.0f;
 				}
 				YPosition -= 2.0f;
