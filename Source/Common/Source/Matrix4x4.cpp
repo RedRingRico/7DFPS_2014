@@ -291,6 +291,27 @@ namespace FPS
 		return *this;
 	}
 
+	Matrix4x4 &Matrix4x4::Translate( const Vector4 &p_Translation )
+	{
+		m_M[ 0 ] = 1.0f;
+		m_M[ 1 ] = m_M[ 2 ] = m_M[ 3 ] = m_M[ 4 ] = 0.0f;
+		m_M[ 5 ] = 1.0f;
+		m_M[ 6 ] = m_M[ 7 ] = m_M[ 8 ] = m_M[ 9 ] = 0.0f;
+		m_M[ 10 ] = 1.0f;
+		m_M[ 11 ] = 0.0f;
+		m_M[ 12 ] = p_Translation.GetX( );
+		m_M[ 13 ] = p_Translation.GetY( );
+		m_M[ 14 ] = p_Translation.GetZ( );
+		m_M[ 15 ] = 1.0f;
+
+		return *this;
+	}
+
+	FPS_FLOAT32 Matrix4x4::Trace( ) const
+	{
+		return m_M[ 0 ] + m_M[ 5 ] + m_M[ 10 ] + m_M[ 15 ];
+	}
+
 	Matrix4x4 &Matrix4x4::CreateView3D( const Vector4 &p_Right,
 		const Vector4 &p_Up, const Vector4 &p_Direction,
 		const Vector4 &p_Position )

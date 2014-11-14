@@ -34,6 +34,10 @@ namespace FPS
 		
 		FPS_UINT32 Render( const FPS_UINT32 p_CacheID );
 
+		FPS_UINT32 DeletePolygons( const FPS_UINT32 p_CacheID );
+
+		void Purge( );
+
 	private:
 		std::vector< POLYGONCACHE >	m_Cache;
 

@@ -124,7 +124,8 @@ namespace FPS
 			reinterpret_cast< const FPS_BYTE * >( Vertices ), Indices,
 			GL_TRIANGLES, 0x66, PolygonID );
 
-		Matrix4x4 View, Projection, World;
+		Matrix4x4 View, Projection, World, WorldRotateZ, WorldTranslate;
+		Vector4 Translation( 1.0f, 0.0f, 0.0f, 1.0f );
 
 		Projection.CreatePerspectiveFOV( 45.0f, 800.0f / 600.0f, 1.0f,
 			100000.0f );
@@ -135,7 +136,7 @@ namespace FPS
 		// Look down the Z axis
 		LookPoint.Set( 0.0f, 0.0f, -1.0f, 1.0f );
 
-		EyePosition.Set( 0.0f, 0.0f, 10.0f, 1.0f );
+		EyePosition.Set( 0.0f, 0.0f, 100.0f, 1.0f );
 
 		FPS_FLOAT32 Rotate = 0.0f;
 
@@ -162,19 +163,36 @@ namespace FPS
 			View.CreateViewLookAt( EyePosition, LookPoint, WorldUp );
 
 			Rotate += 0.01f;
-			World.RotateZ( Rotate );
+			WorldRotateZ.RotateZ( Rotate );
 
 			View.GetAsFloatArray( ViewRaw );
 			Projection.GetAsFloatArray( ProjectionRaw );
-			World.GetAsFloatArray( WorldRaw );
 
 			m_Renderer.Clear( FPS_TRUE, FPS_TRUE, FPS_TRUE );
-			MatMan.SetShaderParameter( Digest, "u_ViewMatrix", ViewRaw );
-			MatMan.SetShaderParameter( Digest, "u_ProjectionMatrix",
-				ProjectionRaw );
-			MatMan.SetShaderParameter( Digest, "u_WorldMatrix", WorldRaw );
-			MatMan.ApplyMaterial( Digest );
-			PolyCache.Render( PolygonID );
+			FPS_FLOAT32 YPosition = 10.0f;
+			for( FPS_MEMSIZE i = 0; i < 10; ++i )
+			{
+				FPS_FLOAT32 XPosition = -10.0f;
+				for( FPS_MEMSIZE j = 0; j < 10; ++j )
+				{
+					Translation.SetX( XPosition );
+					Translation.SetY( YPosition );
+					WorldTranslate.Translate( Translation );
+
+					World = WorldTranslate * WorldRotateZ;
+
+					World.GetAsFloatArray( WorldRaw );
+
+					MatMan.SetShaderParameter( Digest, "u_ViewMatrix", ViewRaw );
+					MatMan.SetShaderParameter( Digest, "u_ProjectionMatrix",
+						ProjectionRaw );
+					MatMan.SetShaderParameter( Digest, "u_WorldMatrix", WorldRaw );
+					MatMan.ApplyMaterial( Digest );
+					PolyCache.Render( PolygonID );
+					XPosition += 2.0f;
+				}
+				YPosition -= 2.0f;
+			}
 			m_Renderer.SwapBuffers( );
 		}
 

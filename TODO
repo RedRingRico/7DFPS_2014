@@ -1,0 +1,4 @@
+# 7DFPS TODO FILE #
+
+* MaterialManager should be able to allocate shaders and textures and allow for
+  retrieval of them

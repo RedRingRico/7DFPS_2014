@@ -158,9 +158,34 @@ namespace FPS
 		glBufferData( GL_ARRAY_BUFFER, NewCache.VertexCount * NewCache.Stride,
 			p_pVertices, GL_STATIC_DRAW );
 
+		GLenum Error = glGetError( );
+
+		if( Error == GL_OUT_OF_MEMORY )
+		{
+			std::cout << "[FPS::PolygonCache::AddPolygons] <ERROR> There is "
+				"no more VRAM left to add vertices" << std::endl;
+
+			glDeleteVertexArrays( 1, &( *CacheItr ).VertexArrayID );
+
+			return FPS_FAIL;
+		}
+
 		glBufferData( GL_ELEMENT_ARRAY_BUFFER,
 			NewCache.IndexCount * sizeof( FPS_UINT16 ), p_pIndices,
 			GL_STATIC_DRAW );
+
+		Error = glGetError( );
+
+		if( Error == GL_OUT_OF_MEMORY )
+		{
+			std::cout << "[FPS::PolygonCache::AddPolygons] <ERROR> There is "
+				"no more VRAM left to add indices" << std::endl;
+			
+			glDeleteBuffers( 1, &( *CacheItr ).VertexBufferID );
+			glDeleteVertexArrays( 1, &( *CacheItr ).VertexArrayID );
+
+			return FPS_FAIL;
+		}
 
 		glBindVertexArray( 0 );
 
