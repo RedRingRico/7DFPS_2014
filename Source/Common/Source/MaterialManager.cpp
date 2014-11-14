@@ -176,22 +176,41 @@ namespace FPS
 
 		if( p_ShaderInfo.Types & SHADER_TYPE_VERTEX )
 		{
-			pMaterialShader->CreateShaderFromSource( p_ShaderInfo.VertexSource,
-				SHADER_TYPE_VERTEX, p_ShaderInfo.VertexFile );
+			if( pMaterialShader->CreateShaderFromSource(
+				p_ShaderInfo.VertexSource, SHADER_TYPE_VERTEX,
+				p_ShaderInfo.VertexFile ) != FPS_OK )
+			{
+				std::cout << "[FPS::MaterialManager::CreateShader] <ERROR> "
+					"Failed to compile the vertex shader" << std::endl;
+
+				return FPS_FAIL;
+			}
 		}
 
 		if( p_ShaderInfo.Types & SHADER_TYPE_FRAGMENT )
 		{
-			pMaterialShader->CreateShaderFromSource(
+			if( pMaterialShader->CreateShaderFromSource(
 				p_ShaderInfo.FragmentSource, SHADER_TYPE_FRAGMENT,
-				p_ShaderInfo.FragmentFile );
+				p_ShaderInfo.FragmentFile ) != FPS_OK )
+			{
+				std::cout << "[FPS::MaterialManager::CreateShader] <ERROR> "
+					"Failed to compile the vertex shader" << std::endl;
+
+				return FPS_FAIL;
+			}
 		}
 
 		if( p_ShaderInfo.Types & SHADER_TYPE_GEOMETRY )
 		{
-			pMaterialShader->CreateShaderFromSource(
+			if( pMaterialShader->CreateShaderFromSource(
 				p_ShaderInfo.GeometrySource, SHADER_TYPE_GEOMETRY,
-				p_ShaderInfo.GeometryFile );
+				p_ShaderInfo.GeometryFile ) != FPS_OK )
+			{
+				std::cout << "[FPS::MaterialManager::CreateShader] <ERROR> "
+					"Failed to compile the vertex shader" << std::endl;
+
+				return FPS_FAIL;
+			}
 		}
 
 		pMaterialShader->GetShaderParameters( p_ShaderParameters );
