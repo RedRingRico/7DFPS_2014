@@ -103,7 +103,7 @@ namespace FPS
 
 		PolygonCache PolyCache;
 
-		PolyCache.Create( 1000, 1000, 5, 0x66 );
+		//PolyCache.Create( 1000, 1000, 5, 0x66 );
 
 		FPS_FLOAT32 Vertices[ ] =
 		// Position | Colour
@@ -118,9 +118,11 @@ namespace FPS
 			0, 1, 2
 		};
 
+		FPS_UINT32 PolygonID;
+
 		PolyCache.AddPolygons( 3, 3,
 			reinterpret_cast< const FPS_BYTE * >( Vertices ), Indices,
-			1, GL_TRIANGLES );
+			GL_TRIANGLES, 0x66, PolygonID );
 
 		Matrix4x4 View, Projection, World;
 
@@ -172,7 +174,7 @@ namespace FPS
 				ProjectionRaw );
 			MatMan.SetShaderParameter( Digest, "u_WorldMatrix", WorldRaw );
 			MatMan.ApplyMaterial( Digest );
-			PolyCache.FlushAllLines( );
+			PolyCache.Render( PolygonID );
 			m_Renderer.SwapBuffers( );
 		}
 

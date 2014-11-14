@@ -4,17 +4,17 @@
 #include <DataTypes.hpp>
 #include <GL/glew.h>
 #include <GL/gl.h>
+#include <vector>
 
 namespace FPS
 {
 	typedef struct _POLYGONCACHE
 	{
-		FPS_BYTE	*pVertices;
-		FPS_UINT16	*pIndices;
+		FPS_UINT32	ID;
+		FPS_MEMSIZE	Stride;
 		FPS_MEMSIZE	VertexCount;
 		FPS_MEMSIZE	IndexCount;
 		FPS_MEMSIZE	PolygonCount;
-		FPS_UINT32	MaterialID;
 		GLuint		VertexBufferID;
 		GLuint		IndexBufferID;
 		GLuint		VertexArrayID;
@@ -27,29 +27,17 @@ namespace FPS
 		PolygonCache( );
 		~PolygonCache( );
 
-		FPS_UINT32 Create( const FPS_MEMSIZE p_VertexCount,
-			const FPS_MEMSIZE p_IndexCount, const FPS_MEMSIZE p_CacheLines,
-			const FPS_UINT64 p_VertexAttributes );
-
-		FPS_UINT32 Destroy( );
-
 		FPS_UINT32 AddPolygons( const FPS_MEMSIZE p_VertexCount,
 			const FPS_MEMSIZE p_IndexCount, const FPS_BYTE *p_pVertices,
-			const FPS_UINT16 *p_pIndices, const FPS_UINT32 p_MaterialID,
-			GLenum p_PrimitiveType );
-
-		void FlushLine( const FPS_MEMSIZE p_Index );
-		FPS_MEMSIZE FlushFullestLine( );
-		void FlushAllLines( );
+			const FPS_UINT16 *p_pIndices, GLenum p_PrimitiveType,
+			const FPS_UINT64 p_VertexAttributes, FPS_UINT32 &p_CacheID );
+		
+		FPS_UINT32 Render( const FPS_UINT32 p_CacheID );
 
 	private:
-		POLYGONCACHE	*m_pCache;
-		FPS_MEMSIZE		m_CacheLines;
-		FPS_UINT64		m_VertexAttributes;
-		FPS_MEMSIZE		m_VertexAttributeCount;
-		FPS_MEMSIZE		m_Stride;
-		FPS_MEMSIZE		m_VertexCapacity;
-		FPS_MEMSIZE		m_IndexCapacity;
+		std::vector< POLYGONCACHE >	m_Cache;
+
+		FPS_UINT32 m_CacheID;
 	};
 }
 
