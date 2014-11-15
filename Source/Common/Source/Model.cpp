@@ -142,7 +142,7 @@ namespace FPS
 
 		m_pRenderer->RegisterPolygons( MeshInfo.VertexCount,
 			MeshInfo.IndexCount, pVertices, pIndices, GL_TRIANGLES,
-			0x66, m_pMeshData[ p_MeshIndex ].ID );
+			0xDC566, m_pMeshData[ p_MeshIndex ].ID );
 
 		m_pMeshData[ p_MeshIndex ].MaterialMD5 = MeshInfo.MaterialMD5;
 
