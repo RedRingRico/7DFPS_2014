@@ -27,12 +27,12 @@ namespace FPS
 	{
 		char		ID[ 4 ];
 		FPS_UINT32	MeshCount;
-		FPS_UINT32	MaterialCount;
 		FPS_UINT32	JointCount;
 	}MODEL_HEADER,*PMODEL_HEADER;
 
 	typedef struct _tagMESH_INFORMATION
 	{
+		char		Name[ 64 ];
 		FPS_UINT32	VertexCount;
 		FPS_UINT32	IndexCount;
 		MD5_DIGEST	MaterialMD5;
