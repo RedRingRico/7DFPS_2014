@@ -85,11 +85,11 @@ namespace FPS
 		}
 
 		FPS_FLOAT32 Vertices[ ] =
-		// Position | Colour
+		// Position | ST
 		{
-			-1.0f, -1.0f, 0.0f, 1.0f, 0.0f, 0.0f,
-			0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 1.0f,
-			1.0f, -1.0f, 0.0f, 1.0f, 1.0f, 0.0f
+			-1.0f, -1.0f, 0.0f, 0.0f, 0.0f,
+			0.0f, 1.0f, 0.0f, 0.5f, 1.0f,
+			1.0f, -1.0f, 0.0f, 1.0f, 0.0f
 		};
 
 		FPS_UINT16 Indices[ ] =
@@ -101,7 +101,7 @@ namespace FPS
 
 		m_Renderer.RegisterPolygons( 3, 3,
 			reinterpret_cast< const FPS_BYTE * >( Vertices ), Indices,
-			GL_TRIANGLES, 0x66, PolygonID );
+			GL_TRIANGLES, 0x56, PolygonID );
 
 		Matrix4x4 View, Projection, World, WorldRotateZ, WorldTranslate;
 		Vector4 Translation( 1.0f, 0.0f, 0.0f, 1.0f );
@@ -162,10 +162,12 @@ namespace FPS
 
 					World.GetAsFloatArray( WorldRaw );
 
-					MatMan.SetShaderParameter( Digest, "u_ViewMatrix", ViewRaw );
+					MatMan.SetShaderParameter( Digest, "u_ViewMatrix",
+						ViewRaw );
 					MatMan.SetShaderParameter( Digest, "u_ProjectionMatrix",
 						ProjectionRaw );
-					MatMan.SetShaderParameter( Digest, "u_WorldMatrix", WorldRaw );
+					MatMan.SetShaderParameter( Digest, "u_WorldMatrix",
+						WorldRaw );
 					MatMan.ApplyMaterial( Digest );
 					m_Renderer.RenderPolygons( PolygonID );
 					XPosition += 2.0f;
