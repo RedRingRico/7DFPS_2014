@@ -208,6 +208,59 @@ namespace FPS
 			return FPS_FAIL;
 		}
 
+		if( MaterialFile.HasMember( "texture" ) )
+		{
+			rapidjson::Value &TextureRoot = MaterialFile[ "texture" ];
+
+			if( TextureRoot.IsArray( ) )
+			{
+				for( rapidjson::SizeType i = 0; i < TextureRoot.Size( ); ++i )
+				{
+					std::string FileName;
+					if( TextureRoot[ i ].HasMember( "type" ) )
+					{
+						std::string TypeString =
+							TextureRoot[ i ][ "type" ].GetString( );
+
+						if( TypeString.compare( "albedo" ) == 0 )
+						{
+						}
+						else
+						{
+							return FPS_FAIL;
+						}
+					}
+					else
+					{
+						return FPS_FAIL;
+					}
+
+					if( TextureRoot[ i ].HasMember( "path" ) )
+					{
+						FileName = TextureRoot[ i ][ "path" ].GetString( );
+					}
+					else
+					{
+						return FPS_FAIL;
+					}
+
+					MD5_DIGEST TextureMD5;
+					m_pMaterialManager->LoadTexture( FileName, TextureMD5 );
+					m_TextureMD5Digest.push_back( TextureMD5 );
+
+					std::cout << "Texture MD5: " << MD5AsString( TextureMD5 ) << std::endl;
+				}
+			}
+			else
+			{
+				return FPS_FAIL;
+			}
+		}
+		else
+		{
+			std::cout << "[FPS::Material::CreateFromFile] <INFO> No textures "
+				"present" << std::endl;
+		}
 
 		m_pMaterialManager->CreateShader( MaterialShader, m_ShaderParameters,
 			m_ShaderMD5Digest );
@@ -218,6 +271,18 @@ namespace FPS
 	FPS_UINT32 Material::GetShader( MD5_DIGEST &p_Digest ) const
 	{
 		memcpy( &p_Digest, &m_ShaderMD5Digest, sizeof( m_ShaderMD5Digest ) );
+
+		return FPS_OK;
+	}
+	
+	FPS_UINT32 Material::GetTextures(
+		std::vector< MD5_DIGEST > &p_Digests ) const
+	{
+		for( FPS_MEMSIZE TextureIndex = 0;
+			TextureIndex < m_TextureMD5Digest.size( ); ++TextureIndex )
+		{
+			p_Digests.push_back( m_TextureMD5Digest[ TextureIndex ] );
+		}
 
 		return FPS_OK;
 	}

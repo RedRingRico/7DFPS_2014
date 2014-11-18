@@ -3,7 +3,6 @@
 
 #include <Shader.hpp>
 #include <Material.hpp>
-#include <Texture.hpp>
 #include <MD5.hpp>
 #include <string>
 #include <map>
@@ -20,6 +19,8 @@ namespace FPS
 		FPS_BOOL	FragmentFile;
 		FPS_BOOL	GeometryFile;
 	}MATERIAL_SHADER,*PMATERIAL_SHADER;
+
+	class Texture;
 
     class MaterialManager
     {
@@ -39,10 +40,13 @@ namespace FPS
 			std::list< std::string > &p_ShaderParameters,
 			MD5_DIGEST &p_ShaderDigest );
 
+		FPS_UINT32 LoadTexture( const std::string &p_FileName,
+			MD5_DIGEST &p_TextureDigest );
+
     private:
 		std::map< MD5_DIGEST, Material * >	m_Materials;
 		std::map< MD5_DIGEST, Shader * >	m_Shaders;
-		std::map< MD5_DIGEST, Texture >		m_Textures;
+		std::map< MD5_DIGEST, Texture * >	m_Textures;
     };
 }
 

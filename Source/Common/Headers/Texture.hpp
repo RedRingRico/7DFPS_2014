@@ -27,6 +27,8 @@ namespace FPS
 	}TARGA_HEADER,*PTARGA_HEADER;
 #pragma pack( )
 
+	class Shader;
+
 	class Texture
 	{
 	public:
@@ -35,7 +37,9 @@ namespace FPS
 
 		FPS_UINT32 LoadFromFile( const std::string &p_FileName );
 
-		void SetActive( );
+		void SetActive( Shader *p_pShader );
+
+		FPS_UINT32 GetDigest( MD5_DIGEST &p_Digest ) const;
 
 	private:
 		MD5_DIGEST	m_Digest;

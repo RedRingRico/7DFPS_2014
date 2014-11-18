@@ -1,6 +1,8 @@
 #include <Texture.hpp>
+#include <Shader.hpp>
 #include <Memory.hpp>
 #include <iostream>
+#include <cstring>
 
 namespace FPS
 {
@@ -112,10 +114,20 @@ namespace FPS
 		return FPS_OK;
 	}
 
-	void Texture::SetActive( )
+	void Texture::SetActive( Shader *p_pShader )
 	{
 		glActiveTexture( GL_TEXTURE0 );
 		glBindTexture( GL_TEXTURE_2D, m_TextureID );
+
+		FPS_SINT32 Zero = 0;
+		p_pShader->SetShaderParameter( "u_Texture", &Zero );
+	}
+
+	FPS_UINT32 Texture::GetDigest( MD5_DIGEST &p_Digest ) const
+	{
+		memcpy( &p_Digest, &m_Digest, sizeof( m_Digest ) );
+
+		return FPS_OK;
 	}
 }
 

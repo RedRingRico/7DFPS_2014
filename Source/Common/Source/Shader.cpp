@@ -323,12 +323,19 @@ namespace FPS
 					static_cast< GLuint * >( p_pData ) );
 				break;
 			}
+			case SHADER_PARAMETER_TYPE_SAMPLER_1D:
+			case SHADER_PARAMETER_TYPE_SAMPLER_2D:
+			case SHADER_PARAMETER_TYPE_SAMPLER_3D:
+			{
+				glUniform1iv( Parameter.Location, Parameter.ArraySize,
+					static_cast< GLint * >( p_pData ) );
+				break;
+			}
 			case SHADER_PARAMETER_TYPE_UNKNOWN:
 			default:
 			{
 				return FPS_FAIL;
 			}
-
 		}
 
 		return FPS_OK;
@@ -479,6 +486,18 @@ namespace FPS
 						( Type.compare( "mat4x4" ) == 0 ) )
 			{
 				ShaderParameter.Type = SHADER_PARAMETER_TYPE_MATRIX4X4;
+			}
+			else if( Type.compare( "sampler1D" ) == 0 )
+			{
+				ShaderParameter.Type = SHADER_PARAMETER_TYPE_SAMPLER_1D;
+			}
+			else if( Type.compare( "sampler2D" ) == 0 )
+			{
+				ShaderParameter.Type = SHADER_PARAMETER_TYPE_SAMPLER_2D;
+			}
+			else if( Type.compare( "sampler3D" ) == 0 )
+			{
+				ShaderParameter.Type = SHADER_PARAMETER_TYPE_SAMPLER_3D;
 			}
 			else
 			{

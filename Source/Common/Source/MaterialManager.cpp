@@ -1,4 +1,5 @@
 #include <MaterialManager.hpp>
+#include <Texture.hpp>
 #include <Memory.hpp>
 #include <iostream>
 
@@ -119,7 +120,32 @@ namespace FPS
 			return FPS_FAIL;
 		}
 
-		return ShaderItr->second->Apply( );
+		std::vector< MD5_DIGEST > TextureArray;
+		MaterialItr->second->GetTextures( TextureArray );
+
+		for( FPS_MEMSIZE i = 0; i < TextureArray.size( ); ++i )
+		{
+			auto TextureItr = m_Textures.begin( );
+
+			while( TextureItr != m_Textures.end( ) )
+			{
+				if( MD5Equal( TextureItr->first, TextureArray[ i ] ) )
+				{
+					TextureItr->second->SetActive( ShaderItr->second );
+					break;
+				}
+				++TextureItr;
+			}
+
+			if( TextureItr == m_Textures.end( ) )
+			{
+				return FPS_FAIL;
+			}
+		}
+
+		ShaderItr->second->Apply( );
+
+		return FPS_OK;
     }
 
     FPS_UINT32 MaterialManager::SetShaderParameter( const MD5_DIGEST &p_Digest,
@@ -229,8 +255,35 @@ namespace FPS
 			std::cout << "[FPS::MaterialManager::CreateShader] <INFO> "
 				"Duplicate shader detected, not adding" << std::endl;
 			SafeDelete< Shader >( pMaterialShader );
+		}
 
+		return FPS_OK;
+	}
+
+	FPS_UINT32 MaterialManager::LoadTexture( const std::string &p_FileName,
+		MD5_DIGEST &p_TextureDigest )
+	{
+		Texture *pMaterialTexture = new Texture( );
+
+		if( pMaterialTexture->LoadFromFile( p_FileName ) != FPS_OK )
+		{
 			return FPS_FAIL;
+		}
+
+		pMaterialTexture->GetDigest( p_TextureDigest );
+
+		std::pair< std::map< MD5_DIGEST, Texture * >::iterator, bool >
+			TextureMapResult;
+
+		TextureMapResult = m_Textures.insert(
+			std::pair< MD5_DIGEST, Texture * >( p_TextureDigest,
+				pMaterialTexture ) );
+
+		if( TextureMapResult.second == false )
+		{
+			std::cout << "[FPS::MaterialManager::LoadTexture] <INFO> "
+				"Duplicate texture detected, not adding" << std::endl;
+			SafeDelete< Texture >( pMaterialTexture );
 		}
 
 		return FPS_OK;

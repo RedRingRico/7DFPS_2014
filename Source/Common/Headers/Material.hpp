@@ -4,6 +4,7 @@
 #include <DataTypes.hpp>
 #include <MD5.hpp>
 #include <list>
+#include <vector>
 #include <string>
 
 namespace FPS
@@ -24,12 +25,12 @@ namespace FPS
 			void *p_pData );
 
 		FPS_UINT32 GetShader( MD5_DIGEST &p_Digest ) const;
-		FPS_UINT32 GetTextures( std::list< MD5_DIGEST > &p_Digests ) const;
+		FPS_UINT32 GetTextures( std::vector< MD5_DIGEST > &p_Digests ) const;
 
 	private:
 		MD5_DIGEST					m_MD5Digest;
 		MD5_DIGEST					m_ShaderMD5Digest;
-		std::list< MD5_DIGEST >		m_TextureMD5Digest;
+		std::vector< MD5_DIGEST >	m_TextureMD5Digest;
 		std::list< std::string >	m_ShaderParameters;
 		MaterialManager				*m_pMaterialManager;
 	};
