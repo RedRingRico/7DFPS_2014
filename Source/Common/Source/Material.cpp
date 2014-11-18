@@ -64,6 +64,19 @@ namespace FPS
 		rapidjson::Document MaterialFile;
 		MaterialFile.Parse( pSource );
 
+		MD5 MaterialMD5;
+		HL_MD5_CTX MaterialMD5Context;
+		
+		MaterialMD5.MD5Init( &MaterialMD5Context );
+
+		MaterialMD5.MD5Update( &MaterialMD5Context,
+			reinterpret_cast< unsigned char * >( pSource ),
+			strlen( pSource ) );
+
+		SafeDeleteArray< char >( pSource );
+
+		MaterialMD5.MD5Final( m_MD5Digest.Digest, &MaterialMD5Context );
+
 		MATERIAL_SHADER MaterialShader;
 		MaterialShader.Types = SHADER_TYPE_NONE;
 
@@ -83,7 +96,6 @@ namespace FPS
 					std::cout << "[FPS::Material::CreateFromFile] <ERROR> "
 						"Failed to load shader source, it is not recognised "
 						"as being an array of values" << std::endl;
-					SafeDeleteArray< char >( pSource );
 
 					return FPS_FAIL;
 				}
@@ -120,7 +132,6 @@ namespace FPS
 						}
 						else
 						{
-							SafeDeleteArray< char >( pSource );
 							std::cout << "[FPS::Material::CreateFromFile] "
 								"<ERROR> Unrecognised shader type '" <<
 								TypeString << "'" << std::endl;
@@ -130,7 +141,6 @@ namespace FPS
 					}
 					else
 					{
-						SafeDeleteArray< char >( pSource );
 						return FPS_FAIL;
 					}
 
@@ -148,7 +158,6 @@ namespace FPS
 					}
 					else
 					{
-						SafeDeleteArray< char >( pSource );
 						std::cout << "[FPS::Material::CreateFromFile] <ERROR> "
 							"Failed to get either the path to a shader file "
 							"or the source code directly (neither code nor "
@@ -182,7 +191,6 @@ namespace FPS
 						}
 						default:
 						{
-							SafeDeleteArray< char >( pSource );
 							return FPS_FAIL;
 						}
 					}
@@ -190,30 +198,16 @@ namespace FPS
 			}
 			else
 			{
-				SafeDeleteArray< char >( pSource );
 				return FPS_FAIL;
 			}
 		}
 		else
 		{
-			SafeDeleteArray< char >( pSource );
 			std::cout << "[FPS::Material::CreateFromFile] <ERROR> "
 				"Could not find shader in JSON" << std::endl;
 			return FPS_FAIL;
 		}
 
-		MD5 MaterialMD5;
-		HL_MD5_CTX MaterialMD5Context;
-		
-		MaterialMD5.MD5Init( &MaterialMD5Context );
-
-		MaterialMD5.MD5Update( &MaterialMD5Context,
-			reinterpret_cast< unsigned char * >( pSource ),
-			strlen( pSource ) );
-
-		SafeDeleteArray< char >( pSource );
-
-		MaterialMD5.MD5Final( m_MD5Digest.Digest, &MaterialMD5Context );
 
 		m_pMaterialManager->CreateShader( MaterialShader, m_ShaderParameters,
 			m_ShaderMD5Digest );

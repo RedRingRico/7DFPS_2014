@@ -85,12 +85,18 @@ namespace FPS
 		}
 
 		FPS_FLOAT32 Vertices[ ] =
-		// Position | ST
+		// Position | Colour
 		{
+			-1.0f, -1.0f, 0.0f, 1.0f, 0.0f, 0.0f,
+			0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 1.0f,
+			1.0f, -1.0f, 0.0f, 1.0f, 1.0f, 0.0f
+		};
+		// Position | ST
+		/*{
 			-1.0f, -1.0f, 0.0f, 0.0f, 0.0f,
 			0.0f, 1.0f, 0.0f, 0.5f, 1.0f,
 			1.0f, -1.0f, 0.0f, 1.0f, 0.0f
-		};
+		};*/
 
 		FPS_UINT16 Indices[ ] =
 		{
@@ -101,7 +107,7 @@ namespace FPS
 
 		m_Renderer.RegisterPolygons( 3, 3,
 			reinterpret_cast< const FPS_BYTE * >( Vertices ), Indices,
-			GL_TRIANGLES, 0x56, PolygonID );
+			GL_TRIANGLES, 0x66/*0x56*/, PolygonID );
 
 		Matrix4x4 View, Projection, World, WorldRotateZ, WorldTranslate;
 		Vector4 Translation( 1.0f, 0.0f, 0.0f, 1.0f );
