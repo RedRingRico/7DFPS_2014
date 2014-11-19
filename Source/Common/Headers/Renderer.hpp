@@ -10,6 +10,14 @@ namespace FPS
 {
 	class PolygonCache;
 
+	enum GBUFFER_TYPE
+	{
+		GBUFFER_TYPE_POSITION = 0,
+		GBUFFER_TYPE_ALBEDO,
+		GBUFFER_TYPE_TEXCOORD,
+		GBUFFER_TOTAL
+	};
+
 	class Renderer
 	{
 	public:
@@ -23,6 +31,9 @@ namespace FPS
 			const FPS_UINT16 *p_pIndices, const GLenum p_PrimitiveType,
 			const FPS_UINT64 p_VertexAttributes, FPS_UINT32 &p_CacheID );
 
+		FPS_UINT32 GBufferBegin( );
+		void GBufferEnd( );
+
 		FPS_UINT32 RenderPolygons( const FPS_UINT32 p_CacheID );
 
 		void SetClearColour( const FPS_FLOAT32 p_Red,
@@ -33,9 +44,13 @@ namespace FPS
 		void SwapBuffers( );
 
 	private:
-		SDL_Window	*m_pWindow;
+		SDL_Window		*m_pWindow;
 		SDL_GLContext	m_GLContext;
 		PolygonCache	*m_pPolygonCache;
+
+		GLuint			m_GBuffer[ GBUFFER_TOTAL ];
+		GLuint			m_DepthTexture;
+		GLuint			m_Framebuffer;
 	};
 }
 

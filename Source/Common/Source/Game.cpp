@@ -152,7 +152,8 @@ namespace FPS
 			View.GetAsFloatArray( ViewRaw );
 			Projection.GetAsFloatArray( ProjectionRaw );
 
-			m_Renderer.Clear( FPS_TRUE, FPS_TRUE, FPS_TRUE );
+		//	m_Renderer.Clear( FPS_TRUE, FPS_TRUE, FPS_TRUE );
+			m_Renderer.GBufferBegin( );
 			FPS_FLOAT32 YPosition = 10.0f;
 			for( FPS_MEMSIZE i = 0; i < 10; ++i )
 			{
@@ -179,6 +180,7 @@ namespace FPS
 				}
 				YPosition -= 2.0f;
 			}
+			m_Renderer.GBufferEnd( );
 			m_Renderer.SwapBuffers( );
 		}
 
