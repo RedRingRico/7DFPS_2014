@@ -76,23 +76,40 @@ namespace FPS
 		{
 			case 16:
 			{
-				InternalFormat = GL_RGBA;
+				InternalFormat = GL_RGB5_A1;
 				Format = GL_RGBA;
 				Type = GL_UNSIGNED_SHORT_5_5_5_1;
 				break;
 			}
 			case 24:
 			{
-				InternalFormat = GL_RGB;
-				Format = GL_RGB;
+				InternalFormat = GL_RGB8;
+				Format = GL_BGR;
 				Type = GL_UNSIGNED_BYTE;
 				break;
 			}
 			case 32:
 			{
-				InternalFormat = GL_RGBA;
-				Format = GL_RGBA;
+				InternalFormat = GL_RGBA8;
+				Format = GL_BGRA;
 				Type = GL_UNSIGNED_BYTE;
+				for( FPS_MEMSIZE i = 0;
+					i < ( TargaHeader.Width * TargaHeader.Height ); ++i )
+				{
+					// I'm not sure why, but the Targa exported from GIMP
+					// has the format of RABG instead of BGRA
+					// It looks like two 16-bit values in a different endian
+					char ColourBuffer[ 4 ];
+					memcpy( ColourBuffer, &pImageData[ i * 4 ], 4 );
+					// R
+					pImageData[ i * 4 ] = ColourBuffer[ 2 ];
+					// G
+					pImageData[ ( i * 4 ) + 1 ] = ColourBuffer[ 3 ];
+					// B
+					pImageData[ ( i * 4 ) + 2 ] = ColourBuffer[ 0 ];
+					// A
+					pImageData[ ( i * 4 ) + 3 ] = ColourBuffer[ 1 ];
+				}
 				break;
 			}
 			default:
@@ -106,8 +123,16 @@ namespace FPS
 		glGenTextures( 1, &m_TextureID );
 		glActiveTexture( GL_TEXTURE0 );
 		glBindTexture( GL_TEXTURE_2D, m_TextureID );
-		glTexImage2D( GL_TEXTURE_2D, 0, InternalFormat, TargaHeader.Width,
-			TargaHeader.Height, 0, Format, Type, pImageData );
+
+		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0 );
+		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0 );
+		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
+		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
+
+		glTexStorage2D( GL_TEXTURE_2D, 1, InternalFormat, TargaHeader.Width,
+			TargaHeader.Height );
+		glTexSubImage2D( GL_TEXTURE_2D, 0, 0, 0, TargaHeader.Width,
+			TargaHeader.Height, Format, Type, pImageData );
 
 		SafeDeleteArray< FPS_BYTE >( pImageData );
 

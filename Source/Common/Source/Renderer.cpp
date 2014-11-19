@@ -34,14 +34,31 @@ namespace FPS
 
 		if( GLEWError != GLEW_OK )
 		{
-			std::cout << "[7DFPS::Game::Initialise] <ERROR> Failed to "
+			std::cout << "[7DFPS::Renderer::Initialise] <ERROR> Failed to "
 				"initialise GLEW" << std::endl;
 
 			return FPS_FAIL;
 		}
 
-		std::cout << "[7DFPS::Game::Initialise] <INFO> GLEW Version: " <<
+		std::cout << "[7DFPS::Renderer::Initialise] <INFO> GLEW Version: " <<
 			glewGetString( GLEW_VERSION ) << std::endl;
+
+		std::cout << "[7DFPS::Renderer::Initialise] <INFO> Checking for "
+			"required OpenGL extensions" << std::endl;
+
+		std::cout << "\tARB_texture_storage... ";
+		if( GLEW_ARB_texture_storage == GL_TRUE )
+		{
+			std::cout << "[OK]" << std::endl;
+		}
+		else
+		{
+			std::cout << "[!!]" << std::endl;
+			return FPS_FAIL;
+		}
+
+		glEnable( GL_DEPTH_TEST );
+		glDepthFunc( GL_GEQUAL );
 
 		m_pPolygonCache = new PolygonCache( );
 
