@@ -32,6 +32,13 @@ namespace FPS
 			return FPS_OK;
 		}
 
+		if( SDL_Init( SDL_INIT_VIDEO ) < 0 )
+		{
+			std::cout << "[7DFPS::Game::Initialise] <ERROR> Failed to "
+				"initialise SDL" << std::endl;
+
+			return FPS_FAIL;
+		}
 
 		SDL_GL_SetAttribute( SDL_GL_CONTEXT_MAJOR_VERSION, 3 );
 		SDL_GL_SetAttribute( SDL_GL_CONTEXT_MINOR_VERSION, 2 );
@@ -47,13 +54,7 @@ namespace FPS
 		SDL_GL_SetAttribute( SDL_GL_GREEN_SIZE, 8 );
 		SDL_GL_SetAttribute( SDL_GL_BLUE_SIZE, 8 );
 
-		if( SDL_Init( SDL_INIT_VIDEO ) < 0 )
-		{
-			std::cout << "[7DFPS::Game::Initialise] <ERROR> Failed to "
-				"initialise SDL" << std::endl;
 
-			return FPS_FAIL;
-		}
 
 		m_pWindow = SDL_CreateWindow( "Red Ring Rico's 7DFPS", 0, 0, 800, 600,
 			SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL );
@@ -70,20 +71,6 @@ namespace FPS
 		{
 			return FPS_FAIL;
 		}
-
-		int Alpha, Red, Green, Blue, Buffer;
-
-		SDL_GL_GetAttribute( SDL_GL_ALPHA_SIZE, &Alpha );
-		SDL_GL_GetAttribute( SDL_GL_RED_SIZE, &Red );
-		SDL_GL_GetAttribute( SDL_GL_GREEN_SIZE, &Green );
-		SDL_GL_GetAttribute( SDL_GL_BLUE_SIZE, &Blue );
-		SDL_GL_GetAttribute( SDL_GL_BUFFER_SIZE, &Buffer );
-
-		std::cout << "Alpha: " << Alpha << std::endl;
-		std::cout << "Red: " << Red << std::endl;
-		std::cout << "Green: " << Green << std::endl;
-		std::cout << "Blue: " << Blue << std::endl;
-		std::cout << "Buffer: " << Buffer << std::endl;
 
 		m_Renderer.SetClearColour( 118.0f / 255.0f, 185.0f / 255.0f, 0.0f );
 

@@ -23,7 +23,6 @@ namespace FPS
 
 	FPS_UINT32 Renderer::Initialise( SDL_Window *p_pWindow )
 	{
-
 		GLenum Error = GL_NO_ERROR;
 		if( p_pWindow == FPS_NULL )
 		{
@@ -33,6 +32,14 @@ namespace FPS
 		m_pWindow = p_pWindow;
 
 		m_GLContext = SDL_GL_CreateContext( m_pWindow );
+		
+		if( m_GLContext == FPS_NULL )
+		{
+			std::cout << "[7DFPS::Renderer::Initialise] <ERROR> Failed to "
+				"create an OpenGL context" << std::endl;
+
+			return FPS_FAIL;
+		}
 
 		glewExperimental = GL_TRUE;
 		GLenum GLEWError = glewInit( );
@@ -44,6 +51,26 @@ namespace FPS
 
 			return FPS_FAIL;
 		}
+
+		// Initialising GLEW generates an error, this is used to ensure the
+		// error doesn't propagate downward
+		glGetError( );
+
+		GLint GLMajor, GLMinor;
+		glGetIntegerv( GL_MAJOR_VERSION, &GLMajor );
+		glGetIntegerv( GL_MINOR_VERSION, &GLMinor );
+
+		std::cout << "[7DFPS::Renderer::Initialise] <INFO> OpenGL Version: " <<
+			GLMajor << "." << GLMinor << std::endl;
+		
+		std::cout << "[7DFPS::Renderer::Initialise] <INFO> OpenGL Vendor: " <<
+			glGetString( GL_VENDOR ) << std::endl;
+
+		std::cout << "[7DFPS::Renderer::Initialise] <INFO> OpenGL "
+			"Renderer: " << glGetString( GL_RENDERER ) << std::endl;
+
+		std::cout << "[7DFPS::Renderer::Initialise] <INFO> GLSL Version: " <<
+			glGetString( GL_SHADING_LANGUAGE_VERSION ) << std::endl;
 
 		std::cout << "[7DFPS::Renderer::Initialise] <INFO> GLEW Version: " <<
 			glewGetString( GLEW_VERSION ) << std::endl;
@@ -63,32 +90,33 @@ namespace FPS
 		}
 
 		glGenFramebuffers( 1, &m_Framebuffer );
-		glBindFramebuffer( GL_FRAMEBUFFER, m_Framebuffer );
 
-		glFramebufferParameteri( GL_DRAW_FRAMEBUFFER,
-			GL_FRAMEBUFFER_DEFAULT_WIDTH, 800 );
-		glFramebufferParameteri( GL_DRAW_FRAMEBUFFER,
-			GL_FRAMEBUFFER_DEFAULT_HEIGHT, 600 );
+		glBindFramebuffer( GL_FRAMEBUFFER, m_Framebuffer );
 
 		glGenTextures( sizeof( m_GBuffer ) / sizeof( m_GBuffer[ 0 ] ),
 			m_GBuffer );
+
 		glGenTextures( 1, &m_DepthTexture );
 
 		for( FPS_MEMSIZE i = 0;
 			i < sizeof( m_GBuffer ) / sizeof( m_GBuffer[ 0 ] ); ++i )
 		{
 			glBindTexture( GL_TEXTURE_2D, m_GBuffer[ i ] );
-
-			glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA32F, 800, 600, 0, GL_RGBA,
-				GL_FLOAT, FPS_NULL );
-			glFramebufferTexture2D( GL_DRAW_FRAMEBUFFER,
+			/*glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA32F, 800, 600, 0, GL_RGBA,
+				GL_FLOAT, FPS_NULL );*/
+			glTexStorage2D( GL_TEXTURE_2D, 1, GL_RGBA32F, 800, 600 );
+			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
+				GL_NEAREST );
+			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,
+				GL_NEAREST );
+			glFramebufferTexture2D( GL_FRAMEBUFFER,
 				GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, m_GBuffer[ i ], 0 );
 		}
 
 		glBindTexture( GL_TEXTURE_2D, m_DepthTexture );
 		glTexImage2D( GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32F, 800, 600, 0,
 			GL_DEPTH_COMPONENT, GL_FLOAT, FPS_NULL );
-		glFramebufferTexture2D( GL_DRAW_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,
+		glFramebufferTexture2D( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,
 			GL_TEXTURE_2D, m_DepthTexture, 0 );
 
 		GLenum DrawBuffers[ ] =
@@ -137,6 +165,8 @@ namespace FPS
 	{
 		glBindFramebuffer( GL_DRAW_FRAMEBUFFER, 0 );
 
+		glViewport( 0, 0, 800, 600 );
+
 		glClearColor( 0.0f, 0.0f, 1.0f, 1.0f );
 		glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
@@ -155,7 +185,7 @@ namespace FPS
 			GL_COLOR_BUFFER_BIT, GL_LINEAR );
 
 		glReadBuffer( GL_COLOR_ATTACHMENT2 );
-		glBlitFramebuffer( 0, 0, 800, 600, HalfWidth, HalfHeight, 800, 0, 
+		glBlitFramebuffer( 0, 0, 800, 600, HalfWidth, 0, 800, HalfHeight, 
 			GL_COLOR_BUFFER_BIT, GL_LINEAR );
 
 		glBindFramebuffer( GL_FRAMEBUFFER, 0 );
