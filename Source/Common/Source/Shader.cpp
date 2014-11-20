@@ -736,6 +736,8 @@ namespace FPS
 				}
 			}
 
+			std::cout << "[INFO> Bound " << UniformItr->first.c_str( ) << std::endl;
+
 			++UniformItr;
 		}
 

@@ -6,7 +6,7 @@
 		]
 	},
 	"texture": [
-		{ "type": "albedo", "path": "Content/Cooked/Textures/Shocked.tga" }
+		{ "type": "albedo", "path": "Content/Cooked/Textures/Biohazard.tga" }
 	]
 }
 

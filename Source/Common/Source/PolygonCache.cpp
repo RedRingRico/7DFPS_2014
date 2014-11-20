@@ -16,6 +16,15 @@ namespace FPS
 
 	PolygonCache::~PolygonCache( )
 	{
+		for( auto Itr = m_Cache.begin( ); Itr != m_Cache.end( ); ++Itr )
+		{
+			if( ( *Itr ).PolygonCount > 0 )
+			{
+				glDeleteBuffers( 1, &( *Itr ).VertexBufferID );
+				glDeleteBuffers( 1, &( *Itr ).IndexBufferID );
+				glDeleteVertexArrays( 1, &( *Itr ).VertexArrayID );
+			}
+		}
 	}
 
 	FPS_UINT32 PolygonCache::AddPolygons( const FPS_MEMSIZE p_VertexCount,
@@ -130,6 +139,7 @@ namespace FPS
 				case 1:
 				{
 					Type = GL_FLOAT;
+					std::cout << "Type: Float" << std::endl;
 					TypeSize = sizeof( FPS_FLOAT32 );
 					break;
 				}
@@ -147,6 +157,8 @@ namespace FPS
 					break;
 				}
 			}
+
+			std::cout << "Size: " << Dimension << std::endl;
 
 			glVertexAttribPointer( VAIndex, Dimension, Type, GL_FALSE,
 				NewCache.Stride, BUFFER_OFFSET( TypeSize * TotalDimension ) );

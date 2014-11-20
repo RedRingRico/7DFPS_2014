@@ -46,6 +46,7 @@ namespace FPS
 		MD5			m_MD5;
 		HL_MD5_CTX	m_MD5Context;
 		GLuint		m_TextureID;
+		GLuint		m_SamplerID;
 	};
 }
 

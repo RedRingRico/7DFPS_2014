@@ -16,6 +16,11 @@ namespace FPS
 			SafeDelete< Shader >( Itr->second );
 		}
 
+		for( auto Itr = m_Textures.begin( ); Itr != m_Textures.end( ); ++Itr )
+		{
+			SafeDelete< Texture >( Itr->second );
+		}
+
 		for( auto Itr = m_Materials.begin( ); Itr != m_Materials.end( );
 			++Itr )
 		{

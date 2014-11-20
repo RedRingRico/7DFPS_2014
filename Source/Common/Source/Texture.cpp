@@ -14,10 +14,6 @@ namespace FPS
 
 	Texture::~Texture( )
 	{
-	}
-
-	FPS_UINT32 Texture::LoadFromFile( const std::string &p_FileName )
-	{
 		if( m_TextureID )
 		{
 			glDeleteTextures( 1, &m_TextureID );
@@ -121,6 +117,7 @@ namespace FPS
 		}
 
 		glGenTextures( 1, &m_TextureID );
+		GLenum Error;
 		glActiveTexture( GL_TEXTURE0 );
 		glBindTexture( GL_TEXTURE_2D, m_TextureID );
 
