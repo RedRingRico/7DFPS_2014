@@ -16,6 +16,9 @@ namespace FPS
 	{
 		SDL_GL_DeleteContext( m_GLContext );
 		SafeDelete< PolygonCache >( m_pPolygonCache );
+		glDeleteFramebuffers( sizeof( m_GBuffer ) / sizeof( m_GBuffer[ 0 ] ),
+			m_GBuffer );
+		glDeleteFramebuffers( 1, &m_DepthTexture );
 	}
 
 	FPS_UINT32 Renderer::Initialise( SDL_Window *p_pWindow )
@@ -60,15 +63,22 @@ namespace FPS
 		}
 
 		glGenFramebuffers( 1, &m_Framebuffer );
-		glBindFramebuffer( GL_DRAW_FRAMEBUFFER, m_Framebuffer );
+		glBindFramebuffer( GL_FRAMEBUFFER, m_Framebuffer );
+
+		glFramebufferParameteri( GL_DRAW_FRAMEBUFFER,
+			GL_FRAMEBUFFER_DEFAULT_WIDTH, 800 );
+		glFramebufferParameteri( GL_DRAW_FRAMEBUFFER,
+			GL_FRAMEBUFFER_DEFAULT_HEIGHT, 600 );
 
 		glGenTextures( sizeof( m_GBuffer ) / sizeof( m_GBuffer[ 0 ] ),
 			m_GBuffer );
 		glGenTextures( 1, &m_DepthTexture );
 
-		for( FPS_MEMSIZE i = 0; i < GBUFFER_TOTAL; ++i )
+		for( FPS_MEMSIZE i = 0;
+			i < sizeof( m_GBuffer ) / sizeof( m_GBuffer[ 0 ] ); ++i )
 		{
 			glBindTexture( GL_TEXTURE_2D, m_GBuffer[ i ] );
+
 			glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA32F, 800, 600, 0, GL_RGBA,
 				GL_FLOAT, FPS_NULL );
 			glFramebufferTexture2D( GL_DRAW_FRAMEBUFFER,
@@ -101,10 +111,11 @@ namespace FPS
 			return FPS_FAIL;
 		}
 
-		glBindFramebuffer( GL_DRAW_FRAMEBUFFER, 0 );
+		glBindFramebuffer( GL_FRAMEBUFFER, 0 );
 
 		glEnable( GL_DEPTH_TEST );
-		glDepthFunc( GL_GEQUAL );
+		glDepthFunc( GL_LEQUAL );
+		glViewport( 0, 0, 800, 600 );
 
 		m_pPolygonCache = new PolygonCache( );
 
@@ -115,7 +126,7 @@ namespace FPS
 	{
 		glBindFramebuffer( GL_DRAW_FRAMEBUFFER, m_Framebuffer );
 
-		glClearColor( 1.0f, 0.0f, 0.0f, 1.0f );
+		glClearColor( 0.0f, 0.0f, 0.0f, 1.0f );
 
 		glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
@@ -135,8 +146,19 @@ namespace FPS
 		GLsizei HalfHeight = 300;
 
 		glReadBuffer( GL_COLOR_ATTACHMENT0 );
-		glBlitFramebuffer( 0, 0, 800, 600, 0, 0, HalfWidth, HalfHeight,
+		glBlitFramebuffer( 0, 0, 800, 600,
+			0, HalfHeight, 400, 600,
 			GL_COLOR_BUFFER_BIT, GL_LINEAR );
+
+		glReadBuffer( GL_COLOR_ATTACHMENT1 );
+		glBlitFramebuffer( 0, 0, 800, 600, 0, 0, 400, 300,
+			GL_COLOR_BUFFER_BIT, GL_LINEAR );
+
+		glReadBuffer( GL_COLOR_ATTACHMENT2 );
+		glBlitFramebuffer( 0, 0, 800, 600, HalfWidth, HalfHeight, 800, 0, 
+			GL_COLOR_BUFFER_BIT, GL_LINEAR );
+
+		glBindFramebuffer( GL_FRAMEBUFFER, 0 );
 	}
 
 	FPS_UINT32 Renderer::RegisterPolygons( const FPS_MEMSIZE p_VertexCount,

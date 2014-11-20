@@ -18,7 +18,10 @@ namespace FPS
 		{
 			glDeleteTextures( 1, &m_TextureID );
 		}
+	}
 
+	FPS_UINT32 Texture::LoadFromFile( const std::string &p_FileName )
+	{
 		FILE *pFile = FPS_NULL;
 		pFile = fopen( p_FileName.c_str() , "rb" );
 
