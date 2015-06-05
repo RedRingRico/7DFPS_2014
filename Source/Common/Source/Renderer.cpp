@@ -2,6 +2,7 @@
 #include <PolygonCache.hpp>
 #include <Memory.hpp>
 #include <iostream>
+#include <cstring>
 
 namespace FPS
 {
@@ -37,6 +38,9 @@ namespace FPS
 		{
 			std::cout << "[7DFPS::Renderer::Initialise] <ERROR> Failed to "
 				"create an OpenGL context" << std::endl;
+
+			SDL_ShowSimpleMessageBox( SDL_MESSAGEBOX_ERROR, "7DFPS Error",
+				"Failed to create an OpenGL 3.2 context", FPS_NULL );
 
 			return FPS_FAIL;
 		}
@@ -77,6 +81,18 @@ namespace FPS
 
 		std::cout << "[7DFPS::Renderer::Initialise] <INFO> Checking for "
 			"required OpenGL extensions" << std::endl;
+
+		GLint ExtensionCount;
+		glGetIntegerv( GL_NUM_EXTENSIONS, &ExtensionCount );
+		std::cout << ExtensionCount << " extensions available"
+			<< std::endl;
+		for( GLint Extension = 0; Extension < ExtensionCount; ++Extension )
+		{
+			std::cout << "\t" << Extension << ": " <<
+				glGetStringi( GL_EXTENSIONS, Extension ) << std::endl;
+		}
+
+		std::cout << std::endl;
 
 		std::cout << "\tARB_texture_storage... ";
 		if( GLEW_ARB_texture_storage == GL_TRUE )
